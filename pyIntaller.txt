@@ -1,0 +1,7 @@
+pyinstaller --name CalculadoraEspesores --onefile `
+  --add-data "Front;Front" `
+  --add-data "Back API/src/api;api" `
+  --add-data "Back API/src/services;services" `
+  --add-data ".env;." `  # <--- AÑADE ESTA LÍNEA
+  --paths "Back API/src" `
+  "Back API/src/main.py"

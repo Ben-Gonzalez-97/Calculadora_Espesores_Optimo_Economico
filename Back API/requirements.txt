@@ -1,0 +1,4 @@
+Flask
+marshmallow
+numpy
+scipy
