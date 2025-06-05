@@ -1,4 +1,0 @@
-Flask
-marshmallow
-numpy
-scipy
