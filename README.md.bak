@@ -1,0 +1,129 @@
+# Calculadora de Espesores - Óptimo Económico
+
+Aplicación web para el cálculo de espesores de aislantes térmicos mediante el método del óptimo económico. Incluye backend en Flask y frontend moderno, con empaquetado opcional como ejecutable usando PyInstaller.
+
+## Tabla de Contenidos
+- [Descripción](#descripción)
+- [Estructura del Proyecto](#estructura-del-proyecto)
+- [Instalación y Ejecución](#instalación-y-ejecución)
+- [Variables de Entorno](#variables-de-entorno)
+- [Uso de la API](#uso-de-la-api)
+- [Empaquetado con PyInstaller](#empaquetado-con-pyinstaller)
+- [Licencia](#licencia)
+- [Contacto](#contacto)
+
+---
+
+## Descripción
+Esta app permite calcular el espesor óptimo de aislamiento térmico en tuberías y paredes, considerando criterios económicos y físicos. El usuario puede ingresar parámetros, seleccionar condiciones y obtener resultados y recomendaciones.
+
+## Estructura del Proyecto
+```
+Calculadora_Espesores_Optimo_Economico/
+├── BackAPI/
+│   └── src/
+│       ├── main.py
+│       ├── api/
+│       ├── services/
+│       └── schemas/
+├── Front/
+│   ├── index.html
+│   ├── app.js
+│   └── styles.css
+├── requirements.txt
+├── pyIntaller.txt
+├── LICENSE
+└── README.md
+```
+
+## Instalación y Ejecución
+### 1. Clonar el repositorio
+```sh
+git clone <url-del-repo>
+cd Calculadora_Espesores_Optimo_Economico
+```
+
+### 2. Instalar dependencias (Python 3.8+ recomendado)
+```sh
+pip install -r requirements.txt
+```
+
+### 3. Configurar variables de entorno
+Crea un archivo `.env` en la raíz del proyecto (ver sección [Variables de Entorno](#variables-de-entorno)).
+
+### 4. Ejecutar en modo desarrollo
+```sh
+cd "BackAPI/src"
+python main.py
+```
+El frontend estará disponible en `http://127.0.0.1:5000`.
+
+## Variables de Entorno
+Ejemplo de `.env`:
+```
+FLASK_ENV=development
+APP_HOST=127.0.0.1
+APP_PORT=5000
+```
+
+## Uso de la API
+La API principal está en `/solve_equation` (POST):
+
+### Ejemplo de request
+```json
+POST /solve_equation
+Content-Type: application/json
+{
+  "equation_key": "optimo_economico_tuberia",
+  "known_values": {
+    "Te": 80,
+    "Ta": 25,
+    "H": 0.05,
+    "v": 2,
+    "vida_util": 10,
+    "w": 0.12,
+    "beta": 0.9,
+    "C": 0.08,
+    "k": 0.04
+  },
+  "variable_to_solve": "e",
+  "flow_type": "externo",
+  "orientation": "horizontal"
+}
+```
+
+### Ejemplo de respuesta
+```json
+{
+  "result": 0.032,
+  "h": 12.5
+}
+```
+
+- `equation_key`: Identificador de la ecuación a usar.
+- `known_values`: Diccionario de variables conocidas.
+- `variable_to_solve`: Variable a despejar (ej: `e` para espesor).
+- `flow_type` y `orientation`: Opcionales, para cálculo automático de coeficiente de convección.
+
+## Empaquetado con PyInstaller
+Puedes generar un ejecutable standalone:
+
+```sh
+pyinstaller --name CalculadoraEspesores --onefile \
+  --add-data "Front;Front" \
+  --add-data "BackAPI/src/api;api" \
+  --add-data "BackAPI/src/services;services" \
+  --add-data ".env;." \
+  --paths "BackAPI/src" \
+  "BackAPI/src/main.py"
+```
+
+Consulta el archivo `pyIntaller.txt` para detalles.
+
+## Licencia
+Este proyecto está bajo la Licencia MIT. Ver [LICENSE](LICENSE).
+
+## Contacto
+Autor: Ben Gonzalez
+
+¿Dudas o sugerencias? Abre un issue o contacta por GitHub.

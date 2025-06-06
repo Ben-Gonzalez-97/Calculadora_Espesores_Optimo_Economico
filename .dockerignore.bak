@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+*.git
+*.vscode
+*.DS_Store
+*.log
+pyIntaller.txt
+LICENSE
+README.md

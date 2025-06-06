@@ -1,0 +1,31 @@
+services:
+  python-back-api:
+    build:
+      context: ./BackAPI
+      dockerfile: ../Dockerfile
+    container_name: python-back-api
+    restart: unless-stopped
+    init: true
+    # env_file: ./.env  # Uncomment if .env file exists and is needed by the backend
+    ports:
+      - "5000:5000"  # Flask backend exposed on 5000
+    networks:
+      - app-net
+    # No external DB or cache detected in README or code structure
+
+  js-front:
+    build:
+      context: ./Front
+      dockerfile: ../FrontDockerfile
+    container_name: js-front
+    restart: unless-stopped
+    ports:
+      - "80:80"  # Nginx serving static frontend
+    networks:
+      - app-net
+    depends_on:
+      - python-back-api  # Frontend expects backend to be up for API calls
+
+networks:
+  app-net:
+    driver: bridge

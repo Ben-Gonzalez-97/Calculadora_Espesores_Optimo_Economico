@@ -67,10 +67,15 @@ if hasattr(sys, '_MEIPASS'):
     # En PyInstaller, 'Front' se añade a la raíz de _MEIPASS.
     static_folder = os.path.join(sys._MEIPASS, 'Front')
 else:
-    # En desarrollo, main.py está en Back API/src/
+    # En desarrollo, main.py está en BackAPI/src/
     # Front está en ../../Front relativo a la ubicación de main.py
     current_script_dir = os.path.dirname(os.path.abspath(__file__))
     static_folder = os.path.abspath(os.path.join(current_script_dir, '..', '..', 'Front'))
+    if not os.path.exists(os.path.join(static_folder, 'index.html')):
+        # Intenta buscar en /app/Front (ruta absoluta dentro del contenedor Docker)
+        static_folder = '/app/Front'
+print("STATIC FOLDER:", static_folder)
+print("INDEX EXISTS:", os.path.exists(os.path.join(static_folder, 'index.html')))
 
 app = Flask(__name__, static_folder=static_folder, static_url_path='')
 CORS(app)

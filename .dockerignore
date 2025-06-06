@@ -1,0 +1,73 @@
+# 1. Version control
+.git/
+.gitignore
+.hg/
+.svn/
+
+# 2. Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.coverage
+
+# 3. Node.js artifacts
+node_modules/
+npm-debug.log
+yarn-debug.log
+
+# 4. Build and distribution outputs
+dist/
+build/
+out/
+
+# 5. IDE/editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 6. Test and debug files
+test/
+tests/
+debug/
+*.log
+
+# 7. Environment and secrets
+.env
+.env.*
+*.env
+*.pem
+*.key
+*.crt
+
+# 8. Configuration overrides
+config.local.*
+*.local.yml
+.local/
+local/
+
+# 9. Documentation and markdown
+README*
+*.md
+docs/
+
+# 10. Docker and compose files
+Dockerfile*
+docker-compose*
+
+# 11. Temporary files and folders
+tmp/
+temp/
+*.tmp
+
+# 12. Project-specific
+LICENSE
+pyIntaller.txt
+
+# 13. Miscellaneous
+*.bak
+*.orig
+
+# Exclude the dockerignore file itself
+!.dockerignore
