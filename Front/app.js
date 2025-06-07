@@ -7,11 +7,6 @@ const calcularBtn = document.getElementById('calcular-btn');
 const resultadoEspesor = document.getElementById('resultado_espesor');
 const resultadoRadioCritico = document.getElementById('resultado_radio_critico');
 
-// --- DECLARACIÓN DE VARIABLES PARA ELEMENTOS DEL MODAL (sin asignar aún) ---
-let btnOpenCatalogModal, catalogModal, btnCloseCatalogModal;
-let catalogNameInputModal, catalogSelectModal, btnLoadCatalogModal;
-let btnSaveCatalogModal, btnDeleteCatalogModal, btnNewCatalogModal;
-
 const CATALOG_STORAGE_KEY = 'parameter_catalogs';
 // --- FIN DECLARACIÓN MODAL ---
 
@@ -456,7 +451,7 @@ const leyendas = {
   Ti: "Temperatura interna máxima (°C)",
   v: "Velocidad del viento (m/s)",
   eta: "Eficiencia de la máquina térmica (%)",
-  diametro: "Altura de la pared o diámetro de la tubería (m)",
+  diametro: "Diámetro de la tubería (m)",
   ambiente: "Tipo de ambiente: interior o exterior",
   tipo_calculo: "Tipo de cálculo: plano, cilindro o esfera",
   orientacion: "Orientación de la geometría: horizontal o vertical"
@@ -475,102 +470,6 @@ window.onload = function () {
   document.getElementById('inp_ambiente').dispatchEvent(new Event('change'));
   document.getElementById('inp_orientacion').dispatchEvent(new Event('change'));
 
-  // --- INICIALIZACIÓN DE ELEMENTOS DEL MODAL Y LISTENERS (DENTRO DE WINDOW.ONLOAD) ---
-  btnOpenCatalogModal = document.getElementById('btn_open_catalog_modal');
-  catalogModal = document.getElementById('catalog_modal');
-  btnCloseCatalogModal = document.getElementById('btn_close_catalog_modal');
-  catalogNameInputModal = document.getElementById('catalog_name_input_modal');
-  catalogSelectModal = document.getElementById('catalog_select_modal');
-  btnLoadCatalogModal = document.getElementById('btn_load_catalog_modal');
-  btnSaveCatalogModal = document.getElementById('btn_save_catalog_modal');
-  btnDeleteCatalogModal = document.getElementById('btn_delete_catalog_modal');
-  btnNewCatalogModal = document.getElementById('btn_new_catalog_modal');
-
-  if (btnOpenCatalogModal) {
-    btnOpenCatalogModal.addEventListener('click', () => {
-      if (catalogModal) catalogModal.style.display = 'block';
-      loadCatalogsToSelectModal();
-    });
-  }
-
-  if (btnCloseCatalogModal) {
-    btnCloseCatalogModal.addEventListener('click', () => {
-      if (catalogModal) catalogModal.style.display = 'none';
-    });
-  }
-
-  if (btnLoadCatalogModal) {
-    btnLoadCatalogModal.addEventListener('click', () => {
-      const selectedName = catalogSelectModal.value;
-      if (selectedName) {
-        const catalogs = JSON.parse(localStorage.getItem(CATALOG_STORAGE_KEY)) || {};
-        if (catalogs[selectedName]) {
-          loadValuesToInputs({ ...catalogs[selectedName], catalog_name: selectedName });
-          // catalogNameInputModal.value = selectedName; // Opcional: ya lo hace loadValuesToInputs
-          if (catalogModal) catalogModal.style.display = 'none';
-        } else {
-          alert('El catálogo seleccionado ya no existe.');
-          loadCatalogsToSelectModal(); // Recargar por si acaso
-        }
-      } else {
-        alert('Por favor, selecciona un conjunto de parámetros para cargar.');
-      }
-    });
-  }
-
-  if (btnSaveCatalogModal) {
-    btnSaveCatalogModal.addEventListener('click', () => {
-      const name = catalogNameInputModal.value.trim();
-      if (name) {
-        const values = getCurrentInputValues();
-        if (saveCatalogSafe(name, values)) {
-          loadCatalogsToSelectModal(); // Actualizar el select
-          alert(`Conjunto '${name}' guardado.`);
-        }
-      } else {
-        alert('Por favor, ingresa un nombre para el conjunto de parámetros.');
-      }
-    });
-  }
-
-  if (btnDeleteCatalogModal) {
-    btnDeleteCatalogModal.addEventListener('click', () => {
-      const selectedName = catalogSelectModal.value;
-      if (selectedName) {
-        let catalogs = JSON.parse(localStorage.getItem(CATALOG_STORAGE_KEY)) || {};
-        if (catalogs[selectedName]) {
-          delete catalogs[selectedName];
-          localStorage.setItem(CATALOG_STORAGE_KEY, JSON.stringify(catalogs));
-          loadCatalogsToSelectModal(); // Actualizar el select
-          catalogNameInputModal.value = ''; // Limpiar input nombre
-          alert(`Conjunto '${selectedName}' eliminado.`);
-        } else {
-          alert('El catálogo seleccionado ya no existe.');
-          loadCatalogsToSelectModal(); // Recargar
-        }
-      } else {
-        alert('Por favor, selecciona un conjunto de parámetros para eliminar.');
-      }
-    });
-  }
-
-  if (btnNewCatalogModal) {
-    btnNewCatalogModal.addEventListener('click', () => {
-      catalogNameInputModal.value = '';
-      loadValuesToInputs(valoresBase); // Cargar valores base
-      // Opcional: limpiar selección del dropdown
-      // catalogSelectModal.value = "";
-      alert('Formulario limpiado para un nuevo conjunto. Ingresa un nombre y guarda.');
-    });
-  }
-  
-  // Listener para cerrar modal si se hace clic fuera de ella
-  window.addEventListener('click', (event) => {
-    if (catalogModal && event.target == catalogModal) {
-      catalogModal.style.display = 'none';
-    }
-  });
-  // --- FIN INICIALIZACIÓN MODAL ---
 };
 
 // --- FUNCIONES PARA GESTIÓN DE CATÁLOGO (adaptadas a MODAL) ---
@@ -608,23 +507,6 @@ function loadValuesToInputs(values) {
   document.getElementById('inp_ambiente').dispatchEvent(new Event('change'));
   document.getElementById('inp_orientacion').dispatchEvent(new Event('change'));
 
-  // Solo para la versión modal antigua, no ejecutar en la nueva interfaz visual
-  if (typeof catalogNameInputModal !== 'undefined' && catalogNameInputModal && values.catalog_name) {
-    catalogNameInputModal.value = values.catalog_name;
-  } else if (typeof catalogSelectModal !== 'undefined' && catalogSelectModal && catalogSelectModal.value) {
-    catalogNameInputModal.value = catalogSelectModal.options[catalogSelectModal.selectedIndex].text;
-  }
-}
-
-function loadCatalogsToSelectModal() {
-  const catalogs = JSON.parse(localStorage.getItem(CATALOG_STORAGE_KEY)) || {};
-  catalogSelectModal.innerHTML = '<option value="">-- Seleccionar para cargar o eliminar --</option>';
-  for (const name in catalogs) {
-    const option = document.createElement('option');
-    option.value = name;
-    option.textContent = name;
-    catalogSelectModal.appendChild(option);
-  }
 }
 
 // --- FIN FUNCIONES GESTIÓN CATÁLOGO ---
