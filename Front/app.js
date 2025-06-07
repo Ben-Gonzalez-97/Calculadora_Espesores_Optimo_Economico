@@ -31,6 +31,7 @@ calcularBtn.addEventListener('click', async () => {
   const Te = Number(document.getElementById('inp_Te').value);
   const Ti = Number(document.getElementById('inp_Ti').value);
   const v = Number(document.getElementById('inp_v').value);
+  const h_input_str = document.getElementById('inp_h').value;
   const eta = Number(document.getElementById('inp_eta').value);
   const diametro = Number(document.getElementById('inp_diametro').value);
   const ambiente = document.getElementById('inp_ambiente').value;
@@ -102,14 +103,20 @@ calcularBtn.addEventListener('click', async () => {
     k,
     Ta,
     Te,
-    Ti, // Usar Ti en vez de Tmax
+    Ti,
     v,
-    eta: eta / 100, // El backend espera eficiencia en fracción
+    // h se añade condicionalmente más abajo
+    eta: eta / 100,
     diametro,
-    H: diametro, // Para el backend, H es altura o diámetro
-    flow_type: ambiente, // interior/exterior
-    orientation: orientacion // vertical/horizontal
+    H: diametro,
+    flow_type: ambiente,
+    orientation: orientacion
   };
+
+  // Usar h del input si es válido y positivo, sino, el backend lo calculará si es necesario
+  if (h_input_str && !isNaN(parseFloat(h_input_str)) && parseFloat(h_input_str) > 0) {
+    known_values.h = parseFloat(h_input_str);
+  }
 
   // El nombre de la variable a despejar para óptimo económico siempre es 'e'
   const variableToSolve = 'e';

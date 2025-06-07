@@ -38,15 +38,6 @@ def solve_equation(equation_str: str, known_values: dict, variable_to_solve: str
     symbols_dict = {name: sp.symbols(name) for name in var_names}
     print("[DEBUG] solve_equation: symbols_dict:", symbols_dict)
     # --- Asignación automática de variables faltantes ---
-    # Si la ecuación requiere 'vida_util' y no está en known_values, error (debe venir como vida_util)
-    # Si la ecuación requiere 'V', remplazar en la ecuación por 'vida_util'
-    equation_str = equation_str.replace('V', 'vida_util')
-    if 'vida_util' in var_names:
-        if 'vida_util' in known_values:
-            pass  # OK
-        else:
-            raise ValueError("Falta la variable 'vida_util' para la ecuación.")
-    # Si la ecuación requiere 'r' y no está en known_values, usar diametro/2
     if 'r' in var_names and 'r' not in known_values:
         if 'diametro' in known_values:
             known_values['r'] = known_values['diametro'] / 2
