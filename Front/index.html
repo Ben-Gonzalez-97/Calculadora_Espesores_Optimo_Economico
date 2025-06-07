@@ -149,7 +149,7 @@
             </div>
             <div class="flex max-w-[280px] flex-wrap items-end gap-4 px-4 py-3">
               <label class="flex flex-col min-w-40 flex-1">
-                <p class="text-[#101518] text-base font-medium leading-normal pb-2">Temperatura Interna maxima (Ti)</p>
+                <p class="text-[#101518] text-base font-medium leading-normal pb-2">Temperatura Interna maxima (°C)</p>
                 <input
                   id="inp_Ti"
                   type="number"
@@ -159,7 +159,7 @@
             </div>
             <div class="flex max-w-[280px] flex-wrap items-end gap-4 px-4 py-3">
               <label class="flex flex-col min-w-40 flex-1">
-                <p class="text-[#101518] text-base font-medium leading-normal pb-2">Velocidad del Viento (v) (m/s)</p>
+                <p class="text-[#101518] text-base font-medium leading-normal pb-2">Velocidad del Viento (m/s)</p>
                 <input
                   id="inp_v"
                   type="number"
@@ -171,7 +171,7 @@
             </div>
             <div class="flex max-w-[280px] flex-wrap items-end gap-4 px-4 py-3">
               <label class="flex flex-col min-w-40 flex-1">
-                <p class="text-[#101518] text-base font-medium leading-normal pb-2">Diámetro de la Tubería (D) (mm)</p>
+                <p class="text-[#101518] text-base font-medium leading-normal pb-2">Diámetro (m)</p>
                 <input
                   id="inp_diametro"
                   type="number"
@@ -183,7 +183,7 @@
             </div>
             <div class="flex max-w-[280px] flex-wrap items-end gap-4 px-4 py-3">
               <label class="flex flex-col min-w-40 flex-1">
-                <p class="text-[#101518] text-base font-medium leading-normal pb-2">Costo volumetrico del Aislamiento (C) ($/m³)</p>
+                <p class="text-[#101518] text-base font-medium leading-normal pb-2">Costo volumetrico del Aislamiento ($/m³)</p>
                 <input
                   id="inp_C"
                   type="number"
@@ -195,7 +195,7 @@
             </div>
             <div class="flex max-w-[280px] flex-wrap items-end gap-4 px-4 py-3">
               <label class="flex flex-col min-w-40 flex-1">
-                <p class="text-[#101518] text-base font-medium leading-normal pb-2">Conductividad Térmica del Aislamiento (k) (W/mK)</p>
+                <p class="text-[#101518] text-base font-medium leading-normal pb-2">Conductividad Térmica del Aislamiento (W/mK)</p>
                 <input
                   id="inp_k"
                   type="number"
@@ -206,7 +206,7 @@
             </div>
             <div class="flex max-w-[280px] flex-wrap items-end gap-4 px-4 py-3">
               <label class="flex flex-col min-w-40 flex-1">
-                <p class="text-[#101518] text-base font-medium leading-normal pb-2">Coeficiente de Convección (h) (W/m²K)</p>
+                <p class="text-[#101518] text-base font-medium leading-normal pb-2">Coeficiente de Convección (W/m²K)</p>
                 <input
                   id="coeficienteConveccion"
                   type="number"
@@ -218,7 +218,7 @@
             </div>
             <div class="flex max-w-[280px] flex-wrap items-end gap-4 px-4 py-3">
               <label class="flex flex-col min-w-40 flex-1">
-                <p class="text-[#101518] text-base font-medium leading-normal pb-2">Horas de Funcionamiento (beta) (horas/año)</p>
+                <p class="text-[#101518] text-base font-medium leading-normal pb-2">Horas de Funcionamiento (horas/año)</p>
                 <input
                   id="inp_beta"
                   type="number"
@@ -256,7 +256,7 @@
               </div>
               <div class="flex-1 min-w-[120px] max-w-[300px]">
                 <label class="flex flex-col">
-                  <p class="text-[#101518] text-base font-medium leading-normal pb-2">Radio Crítico del Aislamiento (m)</p>
+                  <p class="text-[#101518] text-base font-medium leading-normal pb-2">Espesor Crítico del Aislamiento (m)</p>
                   <input
                     id="resultado_radio_critico"
                     readonly
@@ -301,17 +301,17 @@
                   class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101518] focus:outline-0 focus:ring-0 border border-[#d4dde2] bg-gray-50 focus:border-[#d4dde2] h-14 bg-[image:--select-button-svg] placeholder:text-[#5c778a] p-[7px] text-base font-normal leading-normal"
                 >
                   <option value="">(Seleccione variable)</option>
-                  <option value="Ta">Temperatura ambiente (Ta)</option>
-                  <option value="Te">Temperatura superficial (Te)</option>
-                  <option value="Ti">Temperatura interna máxima (Ti)</option>
-                  <option value="v">Velocidad del viento (v)</option>
-                  <option value="k">Conductividad térmica (k)</option>
-                  <option value="diametro">Diámetro/Altura (diametro)</option>
-                  <option value="C">Costo volumétrico (C)</option>
-                  <option value="w">Precio combustible (w)</option>
-                  <option value="beta">Periodo operación (beta)</option>
-                  <option value="vida_util">Vida útil (vida_util)</option>
-                  <option value="eta">Eficiencia (eta)</option>
+                  <option value="Ta">Temperatura ambiente (°C)</option>
+                  <option value="Te">Temperatura superficial (°C)</option>
+                  <option value="Ti">Temperatura interna máxima (°C)</option>
+                  <option value="v">Velocidad del viento (m/s)</option>
+                  <option value="k">Conductividad térmica (W/mK)</option>
+                  <option value="diametro">Diámetro (m)</option>
+                  <option value="C">Costo volumétrico ($/m³)</option>
+                  <option value="w">Precio combustible ($/kWh)</option>
+                  <option value="beta">Periodo operación (horas/año)</option>
+                  <option value="vida_util">Vida útil (año)</option>
+                  <option value="eta">Eficiencia (%)</option>
                 </select>
               </label>
             </div>

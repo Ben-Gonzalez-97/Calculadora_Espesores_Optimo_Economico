@@ -146,38 +146,67 @@ calcularBtn.addEventListener('click', async () => {
         let radioCriticoKey = '';
         if (tipo_calculo === 'optimo_economico_cilindro') radioCriticoKey = 'radio_critico_cilindro';
         else if (tipo_calculo === 'optimo_economico_esfera') radioCriticoKey = 'radio_critico_esfera';
+        else if (tipo_calculo === 'optimo_economico_plano') radioCriticoKey = 'espesor_critico_plano';
         else radioCriticoKey = null;
+
+        console.log('[DEBUG] tipo_calculo:', tipo_calculo);
+        console.log('[DEBUG] radioCriticoKey asignado:', radioCriticoKey);
+
         if (radioCriticoKey) {
+          console.log('[DEBUG] Entrando al bloque if (radioCriticoKey)');
           try {
-            // Usar el valor de h calculado por el backend si está disponible
             const known_values_rc = { ...known_values };
-            if (data.h !== undefined) {
+            if (data.h !== undefined && typeof data.h === 'number' && !isNaN(data.h)) {
               known_values_rc.h = data.h;
-            }
-            const resRC = await fetch(`${API_BASE}solve_equation`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                equation_key: radioCriticoKey,
-                known_values: known_values_rc,
-                variable_to_solve: 'r_c',
-                flow_type: ambiente,
-                orientation: orientacion
-              })
-            });
-            const dataRC = await resRC.json();
-            if (resRC.ok) {
-              resultadoRadioCritico.value = Number(dataRC.result).toFixed(4);
+              console.log('[DEBUG] data.h es válido y asignado a known_values_rc.h:', known_values_rc.h);
             } else {
-              resultadoRadioCritico.value = '-';
+              console.error("[DEBUG] data.h no es un número válido o está indefinido:", data.h);
+              resultadoRadioCritico.value = 'Error: h no disp.';
+              // Si h es crucial y falta, podríamos optar por no continuar
+              // return; // Descomentar si se decide no intentar el fetch sin h
+            }
+            
+            // Comprobación adicional antes del fetch
+            if (typeof known_values_rc.h !== 'number' || isNaN(known_values_rc.h)) {
+              console.error("[DEBUG] Abortando cálculo crítico: known_values_rc.h no es un número válido:", known_values_rc.h);
+              resultadoRadioCritico.value = 'Error: h inválido';
+            } else {
+              const variableCritica = radioCriticoKey === 'espesor_critico_plano' ? 'e_c' : 'r_c';
+              console.log(`[DEBUG] Intentando calcular ${radioCriticoKey} para variable ${variableCritica}. Valores conocidos (rc):`, JSON.stringify(known_values_rc));
+              
+              const resRC = await fetch(`${API_BASE}solve_equation`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  equation_key: radioCriticoKey,
+                  known_values: known_values_rc,
+                  variable_to_solve: variableCritica,
+                  flow_type: ambiente,
+                  orientation: orientacion
+                })
+              });
+              
+              console.log('[DEBUG] Respuesta del fetch para cálculo crítico recibida.');
+              const dataRC = await resRC.json();
+
+              if (resRC.ok) {
+                resultadoRadioCritico.value = Number(dataRC.result).toFixed(4);
+                console.log('[DEBUG] Cálculo crítico exitoso. Resultado:', dataRC.result);
+              } else {
+                resultadoRadioCritico.value = '-';
+                console.error('[DEBUG] Error en cálculo crítico. Respuesta backend:', dataRC);
+              }
             }
           } catch (err) {
             resultadoRadioCritico.value = '-';
+            console.error('[DEBUG] Excepción en bloque try-catch de cálculo crítico:', err);
           }
         } else {
+          console.log('[DEBUG] radioCriticoKey es null o vacío. No se calcula valor crítico.');
           resultadoRadioCritico.value = '-';
         }
       } else {
+        console.log('[DEBUG] tipo_calculo no comienza con "optimo_economico". No se calcula valor crítico.');
         resultadoRadioCritico.value = '-';
       }
     } else {
