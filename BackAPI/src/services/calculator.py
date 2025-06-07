@@ -1,12 +1,11 @@
 import numpy as np
-from scipy.optimize import newton
 import sympy as sp
 from sympy.logic.boolalg import Boolean
 from sympy.core.relational import Equality
 import re
 
 
-def solve_equation(equation_str: str, known_values: dict, variable_to_solve: str, initial_guess=0.1, maxiter=50, tol=1e-6):
+def solve_equation(equation_str: str, known_values: dict, variable_to_solve: str, maxiter=50, tol=1e-6):
     """
     Resuelve una ecuación dada en formato string Python/SymPy para la variable deseada.
     Si no hay solución analítica, intenta resolver numéricamente.
@@ -94,16 +93,16 @@ def solve_equation(equation_str: str, known_values: dict, variable_to_solve: str
             sol_reales = [float(s.evalf()) for s in sol if sp.im(s) == 0 and float(s.evalf()) > 0]
             if sol_reales:
                 print(f"[DEBUG] solve_equation: returning real positive solution {sol_reales[0]}")
-                return sol_reales[0]
+                return sol_reales[0], False # Solución simbólica
             sol_reales = [float(s.evalf()) for s in sol if sp.im(s) == 0]
             if sol_reales:
                 print(f"[DEBUG] solve_equation: returning real solution {sol_reales[0]}")
-                return sol_reales[0]
+                return sol_reales[0], False # Solución simbólica
             print(f"[DEBUG] solve_equation: returning first solution {float(sol[0].evalf())}")
-            return float(sol[0].evalf())
+            return float(sol[0].evalf()), False # Solución simbólica
         else:
             print(f"[DEBUG] solve_equation: returning solution {float(sol.evalf())}")
-            return float(sol.evalf())
+            return float(sol.evalf()), False # Solución simbólica
     # Paso 5: Si no hay solución simbólica, intentar numéricamente
     if isinstance(subs_expr, (sp.Equality, Equality)):
         f_expr = subs_expr.lhs - subs_expr.rhs
@@ -156,7 +155,7 @@ def solve_equation(equation_str: str, known_values: dict, variable_to_solve: str
         if not sol.converged:
             print(f"[DEBUG] root_scalar no convergió tras {sol.iterations} iteraciones. Intervalo: [{emin}, {emax}]")
             raise ValueError(f"El método numérico no convergió tras {sol.iterations} iteraciones.")
-        return float(sol.root)
+        return float(sol.root), sol.iterations # Solución numérica con iteraciones
     except Exception as e:
         print(f"[DEBUG] solve_equation: error en root_scalar: {e}")
         raise ValueError(f"No se pudo encontrar una solución numérica para la variable '{variable_to_solve}' en el intervalo [{emin}, {emax}]. Ajusta los parámetros o revisa los datos. Detalle: {e}")
@@ -249,12 +248,14 @@ def calculate_convection_coefficient(
             # Copia limpia SIN 'h' para restricciones y para solve_latex_equation
             known_values_for_h_clean = {k: v for k, v in known_values_for_h.items() if k != 'h'}
             if check_restrictions(restrictions, known_values_for_h_clean):
-                h_value = solve_equation(
+                # h_value ahora es una tupla (valor, iteraciones)
+                h_value_tuple = solve_equation(
                     equation_str=latex_h_eq,
                     known_values=known_values_for_h_clean,
                     variable_to_solve="h"
                 )
-                return h_value
+                # Usamos solo el primer elemento de la tupla (el valor de h)
+                return h_value_tuple[0]
                 
     raise ValueError(
         f"No se pudo encontrar una fórmula de coeficiente de convección adecuada para "

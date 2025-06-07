@@ -135,7 +135,13 @@ calcularBtn.addEventListener('click', async () => {
     const data = await res.json();
     if (res.ok) {
       resultadoEspesor.value = Number(data.result).toFixed(4);
-      document.getElementById('resultado').textContent = 'Cálculo exitoso.';
+      let mensajeResultado = 'Cálculo exitoso.';
+      if (data.iterations !== undefined && data.iterations !== false) {
+        mensajeResultado += ` (${data.iterations} iteraciones numéricas)`;
+      } else if (data.iterations === false) {
+        mensajeResultado += ` (solución simbólica)`;
+      }
+      document.getElementById('resultado').textContent = mensajeResultado;
       calcularBtn.classList.add('exito');
       calcularBtn.classList.remove('error');
       if (data.h !== undefined) {
@@ -193,7 +199,12 @@ calcularBtn.addEventListener('click', async () => {
 
               if (resRC.ok) {
                 resultadoRadioCritico.value = Number(dataRC.result).toFixed(4);
-                console.log('[DEBUG] Cálculo crítico exitoso. Resultado:', dataRC.result);
+                let mensajeCritico = 'Cálculo crítico exitoso.'; // Mensaje base
+                if (dataRC.iterations !== undefined && dataRC.iterations !== false) {
+                    mensajeCritico += ` (${dataRC.iterations} iteraciones numéricas)`;
+                }
+                console.log('[DEBUG] Cálculo crítico. Resultado:', dataRC.result, 'Iteraciones:', dataRC.iterations);
+                // Podrías mostrar dataRC.iterations en algún lugar si es relevante para el usuario
               } else {
                 resultadoRadioCritico.value = '-';
                 console.error('[DEBUG] Error en cálculo crítico. Respuesta backend:', dataRC);
@@ -434,6 +445,7 @@ const valoresBase = {
   Ti: 180,
   v: 2.1,
   eta: 85,
+  h: '', 
   diametro: 0.1016,
   ambiente: '', // Estos se pueden preseleccionar si hay valores comunes
   tipo_calculo: '', // o dejar vacíos para que el usuario elija

@@ -41,8 +41,8 @@ def solve_equation_route():
             return jsonify({'error': f'Error calculando h: {str(e)}'}), 400
 
     try:
-        result = solve_equation(latex, known_values, variable_to_solve)
-        response = {'result': result}
+        result, iterations = solve_equation(latex, known_values, variable_to_solve)
+        response = {'result': result, 'iterations': iterations}
         if 'h' in known_values:
             response['h'] = known_values['h']
         return jsonify(response)
@@ -140,11 +140,14 @@ def plot_espesor():
                     current_known_values.pop('h', None) # Asegurar que no se use un h incorrecto
 
         try:
-            valor_principal_calculado = solve_equation(
+            # Modificación: Desempaquetar el resultado y las iteraciones
+            valor_principal_calculado_tupla = solve_equation(
                 latex_eq_principal,
                 current_known_values, 
                 variable_principal_a_resolver 
             )
+            valor_principal_calculado = valor_principal_calculado_tupla[0] # Tomar solo el resultado
+            # Las iteraciones están en valor_principal_calculado_tupla[1] si se necesitaran aquí
             print(f"[PLOT DEBUG] Valor principal '{variable_principal_a_resolver}' calculado para {variable}={v_iter_val} (con h={current_known_values.get('h')}): {valor_principal_calculado}")
         except Exception as e_principal:
             print(f"[PLOT DEBUG] Error calculando '{variable_principal_a_resolver}' para {variable}={v_iter_val}: {e_principal}")
