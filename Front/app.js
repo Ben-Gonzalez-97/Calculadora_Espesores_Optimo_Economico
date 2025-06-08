@@ -554,6 +554,31 @@ graficarBtn.addEventListener('click', async () => {
 });
 // --- FIN GRAFICAR ---
 
+// --- MODAL DE INFORMACIÓN ---
+const infoModalBtn = document.getElementById('info-modal-btn');
+const infoModal = document.getElementById('info-modal');
+const closeInfoModalBtn = document.getElementById('close-info-modal-btn');
+
+if (infoModalBtn && infoModal && closeInfoModalBtn) {
+  infoModalBtn.addEventListener('click', () => {
+    infoModal.classList.remove('hidden');
+  });
+
+  closeInfoModalBtn.addEventListener('click', () => {
+    infoModal.classList.add('hidden');
+  });
+
+  // Cerrar modal si se hace clic fuera de él
+  window.addEventListener('click', (event) => {
+    if (event.target === infoModal) {
+      infoModal.classList.add('hidden');
+    }
+  });
+} else {
+  console.error('No se encontraron los elementos del modal de información. Asegúrate de que los IDs son correctos en HTML y JS.');
+}
+// --- FIN MODAL DE INFORMACIÓN ---
+
 // Código movido desde index.html y mejorado
 const valoresBase = {
   vida_util: 15,
