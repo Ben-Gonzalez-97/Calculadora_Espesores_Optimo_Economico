@@ -248,11 +248,58 @@ const selectVariableGrafica = document.getElementById('select_variable_grafica')
 const canvasGrafica = document.getElementById('grafica_espesor');
 let chartEspesor = null;
 
+// Nuevos campos para rango de gráfica
+const inpGraficaMin = document.getElementById('inp_grafica_min');
+const inpGraficaMax = document.getElementById('inp_grafica_max');
+const inpGraficaPaso = document.getElementById('inp_grafica_paso');
+
+// Rangos por defecto para la gráfica en el frontend
+const defaultGraphRanges = {
+    'Ta': [10, 50, 1],
+    'Te': [10, 100, 5],
+    'Ti': [20, 300, 5],
+    'v': [0.1, 10, 0.2],
+    'k': [0.01, 0.2, 0.005],
+    'diametro': [0.01, 1, 0.02],
+    'C': [100, 10000, 200],
+    'w': [0.01, 0.2, 0.005],
+    'beta': [0, 8760, 24],
+    'vida_util': [1, 30, 1],
+    'eta': [10, 100, 5]
+};
+
+selectVariableGrafica.addEventListener('change', (event) => {
+    const selectedVariable = event.target.value;
+    const ranges = defaultGraphRanges[selectedVariable];
+
+    if (ranges) {
+        inpGraficaMin.value = ranges[0];
+        inpGraficaMax.value = ranges[1];
+        inpGraficaPaso.value = ranges[2];
+    } else {
+        // Valores por defecto genéricos si la variable no tiene rangos predefinidos
+        inpGraficaMin.value = ''; // O un valor como 0
+        inpGraficaMax.value = ''; // O un valor como 10
+        inpGraficaPaso.value = ''; // O un valor como 1
+    }
+});
+
 graficarBtn.addEventListener('click', async () => {
   const variable = selectVariableGrafica.value;
   const tipo_calculo = document.getElementById('inp_tipo_calculo').value;
   const ambiente = document.getElementById('inp_ambiente').value;
   const orientacion = document.getElementById('inp_orientacion').value;
+
+  // Obtener valores de min, max, paso
+  const grafica_min_str = inpGraficaMin.value;
+  const grafica_max_str = inpGraficaMax.value;
+  const grafica_paso_str = inpGraficaPaso.value;
+
+  let grafica_min = grafica_min_str !== '' ? parseFloat(grafica_min_str) : undefined;
+  let grafica_max = grafica_max_str !== '' ? parseFloat(grafica_max_str) : undefined;
+  let grafica_paso = grafica_paso_str !== '' ? parseFloat(grafica_paso_str) : undefined;
+
+
   if (!variable) {
     alert('Selecciona una variable a graficar.');
     return;
@@ -278,19 +325,33 @@ graficarBtn.addEventListener('click', async () => {
     flow_type: ambiente,
     orientation: orientacion
   };
+  // Validar y añadir min, max, paso si están definidos
+  const plotParams = {
+    equation_key: tipo_calculo,
+    variable,
+    known_values: baseValues,
+    flow_type: ambiente,
+    orientation: orientacion
+  };
+
+  if (grafica_min !== undefined && !isNaN(grafica_min)) {
+    plotParams.min_val = grafica_min;
+  }
+  if (grafica_max !== undefined && !isNaN(grafica_max)) {
+    plotParams.max_val = grafica_max;
+  }
+  if (grafica_paso !== undefined && !isNaN(grafica_paso) && grafica_paso > 0) {
+    plotParams.step_val = grafica_paso;
+  }
+
+
   graficarBtn.disabled = true;
   graficarBtn.textContent = 'Graficando...';
   try {
     const res = await fetch(`${API_BASE}plot_espesor`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        equation_key: tipo_calculo,
-        variable,
-        known_values: baseValues,
-        flow_type: ambiente,
-        orientation: orientacion
-      })
+      body: JSON.stringify(plotParams)
     });
     const data = await res.json();
     if(res.ok && data.x && data.y) {

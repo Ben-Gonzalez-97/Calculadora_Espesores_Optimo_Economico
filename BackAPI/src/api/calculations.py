@@ -73,8 +73,6 @@ def plot_espesor():
     variable = data.get('variable')
     known_values = data.get('known_values', {})
     
-    # Usar flow_type y orientation de la petición directa, o de known_values como fallback.
-    # Estos son los valores generales para la configuración de la gráfica.
     flow_type = data.get('flow_type') 
     if not flow_type and 'flow_type' in known_values:
         flow_type = known_values['flow_type']
@@ -83,24 +81,42 @@ def plot_espesor():
     if not orientation and 'orientation' in known_values:
         orientation = known_values['orientation']
 
-    min_ = data.get('min')
-    max_ = data.get('max')
-    step = data.get('step')
+    # Leer los parámetros de rango del request con los nombres correctos
+    req_min_val = data.get('min_val')
+    req_max_val = data.get('max_val')
+    req_step_val = data.get('step_val')
     
-    rangos = {
+    # Rangos por defecto
+    default_rangos = {
         'Ta': (10, 50, 1), 'Te': (10, 100, 5), 'Ti': (20, 300, 5),
         'v': (0.1, 10, 0.2), 'k': (0.01, 0.2, 0.005),
         'diametro': (0.01, 1, 0.02), 'C': (100, 10000, 200),
-        'w': (0.01, 0.2, 0.005), 'beta': (0, 8670, 24),
+        'w': (0.01, 0.2, 0.005), 'beta': (0, 8760, 24), # Ajustado max a 8760
         'vida_util': (1, 30, 1), 'eta': (10, 100, 5)
     }
 
     if not variable or not equation_key:
         return jsonify({'error': 'Faltan parámetros: variable o equation_key'}), 400
     
-    if min_ is None or max_ is None or step is None:
-        min_, max_, step = rangos.get(variable, (0, 10, 1))
-
+    # Determinar los valores de rango a utilizar
+    if req_min_val is not None and req_max_val is not None and req_step_val is not None:
+        # Usar valores del request. 
+        # El frontend ya valida que step_val > 0 y que son números.
+        # Una validación adicional en el backend podría ser útil en el futuro.
+        if not (isinstance(req_min_val, (int, float)) and
+                isinstance(req_max_val, (int, float)) and
+                isinstance(req_step_val, (int, float))):
+            return jsonify({'error': 'Mínimo, Máximo y Paso deben ser números.'}), 400
+        if req_step_val <= 0:
+            return jsonify({'error': 'El valor de "Paso" para la gráfica debe ser positivo.'}), 400
+        
+        min_to_use = req_min_val
+        max_to_use = req_max_val
+        step_to_use = req_step_val
+    else:
+        # Si no, usar los rangos por defecto para la variable seleccionada
+        min_to_use, max_to_use, step_to_use = default_rangos.get(variable, (0, 10, 1)) # Fallback genérico
+    
     x_vals = []
     y_vals = []  # Valores del espesor 'e' o la variable principal de la ecuación
     h_vals = []  # NUEVO: para los valores de 'h'
@@ -112,7 +128,7 @@ def plot_espesor():
     latex_eq_principal = eq_obj['latex'] if isinstance(eq_obj, dict) else eq_obj
     variable_principal_a_resolver = 'e' # Asumimos que el eje Y principal es el espesor.
 
-    for v_iter_val in np.arange(min_, max_ + step, step):
+    for v_iter_val in np.arange(min_to_use, max_to_use + step_to_use, step_to_use):
         current_known_values = known_values.copy()
         current_known_values[variable] = v_iter_val
 

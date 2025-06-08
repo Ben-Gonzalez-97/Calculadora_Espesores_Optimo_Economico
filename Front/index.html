@@ -293,7 +293,7 @@
               </div>
             </div>
             <h3 class="text-[#101518] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Gráfico</h3>
-            <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
+            <div class="flex max-w-[325px] flex-wrap items-end gap-4 px-4 py-3">
               <label class="flex flex-col min-w-40 flex-1">
                 <p class="text-[#101518] text-base font-medium leading-normal pb-2">Seleccionar Variable</p>
                 <select
@@ -315,10 +315,22 @@
                 </select>
               </label>
             </div>
-            <div class="flex gap-2 px-4 py-3">
-              <button id="graficar-btn" class="calcular-btn flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#b2d1e5] text-[#101518] text-sm font-bold leading-normal tracking-[0.015em]">
+            <div class="flex flex-wrap items-end gap-x-4 gap-y-2 px-4 py-3 w-full">
+              <button id="graficar-btn" class="calcular-btn flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#b2d1e5] text-[#101518] text-sm font-bold leading-normal tracking-[0.015em] self-end">
                 Graficar
               </button>
+              <label class="flex flex-col flex-1 min-w-[80px]">
+                <p class="text-[#101518] text-sm font-medium leading-normal pb-1">Mínimo</p>
+                <input id="inp_grafica_min" type="number" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101518] focus:outline-0 focus:ring-0 border border-[#d4dde2] bg-gray-50 focus:border-[#d4dde2] h-10 placeholder:text-[#5c778a] p-2 text-sm font-normal leading-normal" />
+              </label>
+              <label class="flex flex-col flex-1 min-w-[80px]">
+                <p class="text-[#101518] text-sm font-medium leading-normal pb-1">Máximo</p>
+                <input id="inp_grafica_max" type="number" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101518] focus:outline-0 focus:ring-0 border border-[#d4dde2] bg-gray-50 focus:border-[#d4dde2] h-10 placeholder:text-[#5c778a] p-2 text-sm font-normal leading-normal" />
+              </label>
+              <label class="flex flex-col flex-1 min-w-[80px]">
+                <p class="text-[#101518] text-sm font-medium leading-normal pb-1">Paso</p>
+                <input id="inp_grafica_paso" type="number" step="any" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101518] focus:outline-0 focus:ring-0 border border-[#d4dde2] bg-gray-50 focus:border-[#d4dde2] h-10 placeholder:text-[#5c778a] p-2 text-sm font-normal leading-normal" />
+              </label>
             </div>
             <div class="flex flex-col px-4 py-3">
               <canvas id="grafica_espesor" width="600" height="320"></canvas>
