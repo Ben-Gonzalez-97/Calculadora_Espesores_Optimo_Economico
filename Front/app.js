@@ -6,6 +6,7 @@ const API_BASE = window.API_BASE || '/';
 const calcularBtn = document.getElementById('calcular-btn');
 const resultadoEspesor = document.getElementById('resultado_espesor');
 const resultadoRadioCritico = document.getElementById('resultado_radio_critico');
+const resultadoMensaje = document.getElementById('resultado'); // Referencia para el mensaje de cálculo puntual
 
 const CATALOG_STORAGE_KEY = 'parameter_catalogs';
 // --- FIN DECLARACIÓN MODAL ---
@@ -13,7 +14,8 @@ const CATALOG_STORAGE_KEY = 'parameter_catalogs';
 calcularBtn.addEventListener('click', async () => {
   resultadoEspesor.value = '-';
   resultadoRadioCritico.value = '-';
-  document.getElementById('resultado').textContent = '';
+  resultadoMensaje.textContent = ''; // Limpiar mensaje anterior
+  resultadoMensaje.className = 'px-4 py-2 text-base font-semibold min-h-6'; // Resetear clases
   document.getElementById('resultado_h').value = '-';
 
   // Obtener valores del formulario
@@ -35,57 +37,71 @@ calcularBtn.addEventListener('click', async () => {
 
   // Validaciones mínimas
   if (!tipo_calculo || !ambiente || !orientacion) {
-    document.getElementById('resultado').textContent = 'Completa todos los campos obligatorios.';
+    resultadoMensaje.textContent = 'Completa todos los campos obligatorios.';
+    resultadoMensaje.classList.add('text-red-600');
     return;
   }
   if (!diametro || diametro <= 0) {
-    document.getElementById('resultado').textContent = 'El diámetro o altura de la pared debe ser mayor a cero.';
+    resultadoMensaje.textContent = 'El diámetro o altura de la pared debe ser mayor a cero.';
+    resultadoMensaje.classList.add('text-red-600');
     return;
   }
 
   // Validaciones adicionales de restricciones
   if (vida_util < 1) {
-    document.getElementById('resultado').textContent = 'La vida útil debe ser mayor o igual a 1.';
+    resultadoMensaje.textContent = 'La vida útil debe ser mayor o igual a 1.';
+    resultadoMensaje.classList.add('text-red-600');
     return;
   }
   if (w <= 0) {
-    document.getElementById('resultado').textContent = 'El precio del combustible debe ser mayor que 0.';
+    resultadoMensaje.textContent = 'El precio del combustible debe ser mayor que 0.';
+    resultadoMensaje.classList.add('text-red-600');
     return;
   }
   if (beta <= 0 || beta > 8760) {
-    document.getElementById('resultado').textContent = 'El periodo de operación debe ser mayor que 0 y menor o igual a 8760.';
+    resultadoMensaje.textContent = 'El periodo de operación debe ser mayor que 0 y menor o igual a 8760.';
+    resultadoMensaje.classList.add('text-red-600');
     return;
   }
   if (C <= 0) {
-    document.getElementById('resultado').textContent = 'El coste volumétrico del aislamiento debe ser mayor que 0.';
+    resultadoMensaje.textContent = 'El coste volumétrico del aislamiento debe ser mayor que 0.';
+    resultadoMensaje.classList.add('text-red-600');
     return;
   }
   if (k <= 0) {
-    document.getElementById('resultado').textContent = 'La conductividad térmica debe ser mayor que 0.';
+    resultadoMensaje.textContent = 'La conductividad térmica debe ser mayor que 0.';
+    resultadoMensaje.classList.add('text-red-600');
     return;
   }
   if (Ta >= Te) {
-    document.getElementById('resultado').textContent = 'La temperatura ambiente debe ser menor que la temperatura exterior o superficial.';
+    resultadoMensaje.textContent = 'La temperatura ambiente debe ser menor que la temperatura exterior o superficial.';
+    resultadoMensaje.classList.add('text-red-600');
     return;
   }
   if (Te <= Ta) {
-    document.getElementById('resultado').textContent = 'La temperatura exterior o superficial debe ser mayor que la temperatura ambiente.';
+    resultadoMensaje.textContent = 'La temperatura exterior o superficial debe ser mayor que la temperatura ambiente.';
+    resultadoMensaje.classList.add('text-red-600');
     return;
   }
   if (Ti <= Te) {
-    document.getElementById('resultado').textContent = 'La temperatura interna máxima debe ser mayor que la temperatura exterior o superficial.';
+    resultadoMensaje.textContent = 'La temperatura interna máxima debe ser mayor que la temperatura exterior o superficial.';
+    resultadoMensaje.classList.add('text-red-600');
     return;
   }
   if (v < 0) {
-    document.getElementById('resultado').textContent = 'La velocidad del viento debe ser mayor o igual a 0.';
+    resultadoMensaje.textContent = 'La velocidad del viento debe ser mayor o igual a 0.';
+    resultadoMensaje.classList.add('text-red-600');
     return;
   }
   if (eta <= 0 || eta > 100) {
-    document.getElementById('resultado').textContent = 'La eficiencia de la máquina debe ser mayor que 0 y menor o igual a 1 (fracción, no porcentaje).';
+    // Se mantiene la validación original de eta, ya que el input espera porcentaje
+    resultadoMensaje.textContent = 'La eficiencia de la máquina debe ser mayor que 0 y menor o igual a 100 (porcentaje).';
+    resultadoMensaje.classList.add('text-red-600');
     return;
   }
   if (diametro <= 0) {
-    document.getElementById('resultado').textContent = 'El diámetro interior o altura de la pared debe ser mayor que 0.';
+    resultadoMensaje.textContent = 'El diámetro interior o altura de la pared debe ser mayor que 0.';
+    resultadoMensaje.classList.add('text-red-600');
     return;
   }
 
@@ -141,7 +157,8 @@ calcularBtn.addEventListener('click', async () => {
       } else if (data.iterations === false) {
         mensajeResultado += ` (solución simbólica)`;
       }
-      document.getElementById('resultado').textContent = mensajeResultado;
+      resultadoMensaje.textContent = mensajeResultado;
+      resultadoMensaje.classList.add('text-green-600'); // Color verde para éxito
       calcularBtn.classList.add('exito');
       calcularBtn.classList.remove('error');
       if (data.h !== undefined) {
@@ -225,14 +242,16 @@ calcularBtn.addEventListener('click', async () => {
     } else {
       resultadoEspesor.value = '-';
       resultadoRadioCritico.value = '-';
-      document.getElementById('resultado').textContent = data.error || 'Error al calcular.';
+      resultadoMensaje.textContent = data.error || 'Error al calcular.';
+      resultadoMensaje.classList.add('text-red-600'); // Color rojo para error
       calcularBtn.classList.add('error');
       calcularBtn.classList.remove('exito');
       document.getElementById('resultado_h').value = '-';
     }
   } catch (err) {
     resultadoEspesor.value = '-';
-    document.getElementById('resultado').textContent = 'Error de conexión con el backend.';
+    resultadoMensaje.textContent = 'Error de conexión con el backend.';
+    resultadoMensaje.classList.add('text-red-600'); // Color rojo para error de conexión
     calcularBtn.classList.add('error');
     calcularBtn.classList.remove('exito');
     document.getElementById('resultado_h').value = '-';
@@ -246,6 +265,7 @@ calcularBtn.addEventListener('click', async () => {
 const graficarBtn = document.getElementById('graficar-btn');
 const selectVariableGrafica = document.getElementById('select_variable_grafica');
 const canvasGrafica = document.getElementById('grafica_espesor');
+const resultadoGrafica = document.getElementById('resultado_grafica'); // Nueva referencia
 let chartEspesor = null;
 
 // Nuevos campos para rango de gráfica
@@ -285,6 +305,9 @@ selectVariableGrafica.addEventListener('change', (event) => {
 });
 
 graficarBtn.addEventListener('click', async () => {
+  resultadoGrafica.textContent = ''; // Limpiar mensajes anteriores
+  resultadoGrafica.className = 'px-4 py-2 text-base font-semibold min-h-6'; // Resetear clases
+
   const variable = selectVariableGrafica.value;
   const tipo_calculo = document.getElementById('inp_tipo_calculo').value;
   const ambiente = document.getElementById('inp_ambiente').value;
@@ -301,13 +324,47 @@ graficarBtn.addEventListener('click', async () => {
 
 
   if (!variable) {
-    alert('Selecciona una variable a graficar.');
+    resultadoGrafica.textContent = 'Selecciona una variable a graficar.';
+    resultadoGrafica.classList.add('text-red-600');
     return;
   }
   if (!tipo_calculo || !ambiente || !orientacion) {
-    alert('Completa todos los campos obligatorios antes de graficar.');
+    resultadoGrafica.textContent = 'Completa todos los campos obligatorios antes de graficar.';
+    resultadoGrafica.classList.add('text-red-600');
     return;
   }
+
+  // Validaciones para min, max, paso
+  if (grafica_min_str === '' || grafica_max_str === '' || grafica_paso_str === '') {
+    resultadoGrafica.textContent = 'Los campos Mínimo, Máximo y Paso para la gráfica son obligatorios.';
+    resultadoGrafica.classList.add('text-red-600');
+    return;
+  }
+
+  if (isNaN(grafica_min) || isNaN(grafica_max) || isNaN(grafica_paso)) {
+    resultadoGrafica.textContent = 'Mínimo, Máximo y Paso deben ser números válidos.';
+    resultadoGrafica.classList.add('text-red-600');
+    return;
+  }
+
+  if (grafica_max <= grafica_min) {
+    resultadoGrafica.textContent = 'El valor Máximo debe ser mayor o igual que el valor Mínimo.';
+    resultadoGrafica.classList.add('text-red-600');
+    return;
+  }
+
+  if (grafica_paso <= 0) {
+    resultadoGrafica.textContent = 'El valor del Paso debe ser mayor que cero.';
+    resultadoGrafica.classList.add('text-red-600');
+    return;
+  }
+
+  if (grafica_paso > (grafica_max - grafica_min)) {
+    resultadoGrafica.textContent = 'El Paso debe ser menor o igual a (Máximo - Mínimo).';
+    resultadoGrafica.classList.add('text-red-600');
+    return;
+  }
+
   // Tomar valores actuales del formulario
   const baseValues = {
     vida_util: Number(document.getElementById('inp_vida_util').value),
@@ -319,7 +376,7 @@ graficarBtn.addEventListener('click', async () => {
     Te: Number(document.getElementById('inp_Te').value),
     Ti: Number(document.getElementById('inp_Ti').value),
     v: Number(document.getElementById('inp_v').value),
-    eta: Number(document.getElementById('inp_eta').value),
+    eta: Number(document.getElementById('inp_eta').value) / 100, // CORREGIDO: Dividir por 100
     diametro: Number(document.getElementById('inp_diametro').value),
     H: Number(document.getElementById('inp_diametro').value),
     flow_type: ambiente,
@@ -347,6 +404,8 @@ graficarBtn.addEventListener('click', async () => {
 
   graficarBtn.disabled = true;
   graficarBtn.textContent = 'Graficando...';
+  graficarBtn.classList.remove('exito', 'error'); // Limpiar clases del botón
+
   try {
     const res = await fetch(`${API_BASE}plot_espesor`, {
       method: 'POST',
@@ -458,36 +517,37 @@ graficarBtn.addEventListener('click', async () => {
         },
         options: {
           responsive: true,
-          interaction: {
-            mode: 'index',
-            intersect: false,
-          },
+          maintainAspectRatio: false,
+          scales: scalesOptions,
           plugins: {
-            legend: { display: true },
-            title: { display: true, text: `Resultados vs ${label}` }, // Título más genérico
-            tooltip: {
-              callbacks: {
-                label: function(context) {
-                  let currentLabel = context.dataset.label || '';
-                  if (currentLabel) {
-                    currentLabel += ': ';
-                  }
-                  if (context.parsed.y !== null && context.parsed.y !== undefined) {
-                    currentLabel += context.parsed.y.toFixed(3);
-                  }
-                  return currentLabel;
-                }
-              }
+            legend: {
+              position: 'top',
+            },
+            title: {
+              display: true,
+              text: `Espesor Óptimo vs ${label}`
             }
-          },
-          scales: scalesOptions
+          }
         }
       });
+      resultadoGrafica.textContent = 'Gráfico generado exitosamente.';
+      resultadoGrafica.classList.add('text-green-600');
+      graficarBtn.classList.add('exito');
+
     } else {
-      alert('No se pudo calcular la gráfica.');
+      if(chartEspesor) chartEspesor.destroy(); // Destruir gráfico anterior si existe
+      canvasGrafica.getContext('2d').clearRect(0, 0, canvasGrafica.width, canvasGrafica.height); // Limpiar canvas
+      resultadoGrafica.textContent = data.error || 'Error al generar el gráfico. No se recibieron datos válidos.';
+      resultadoGrafica.classList.add('text-red-600');
+      graficarBtn.classList.add('error');
     }
   } catch (err) {
-    alert('Error de conexión con el backend.');
+    if(chartEspesor) chartEspesor.destroy();
+    canvasGrafica.getContext('2d').clearRect(0, 0, canvasGrafica.width, canvasGrafica.height); // Limpiar canvas en caso de error de red
+    resultadoGrafica.textContent = 'Error de conexión con el backend al generar el gráfico.';
+    resultadoGrafica.classList.add('text-red-600');
+    graficarBtn.classList.add('error');
+    console.error('Error al graficar:', err);
   }
   graficarBtn.disabled = false;
   graficarBtn.textContent = 'Graficar';
