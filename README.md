@@ -148,6 +148,106 @@ Content-Type: application/json
 - `variable_to_solve`: Variable a despejar (ej: `e` para espesor).
 - `flow_type` y `orientation`: Opcionales, para cálculo automático de coeficiente de convección.
 
+### GET /equation_info/<equation_key>
+Recupera la información de una ecuación específica, incluyendo su formato LaTeX y restricciones.
+
+**Parámetros de URL:**
+- `equation_key` (string, path): El identificador de la ecuación (ej: "optimo_economico_tuberia").
+
+**Ejemplo de request:**
+```http
+GET /equation_info/optimo_economico_tuberia
+```
+
+**Ejemplo de respuesta:**
+```json
+{
+  "latex": "e = \\\\sqrt{\\\\frac{2 \\\\cdot k \u00b7 (Te - Ta) \u00b7 vida_util \u00b7 w \u00b7 beta}{C \u00b7 eta}} - D/2",
+  "restricciones": [
+    "Te > Ta",
+    "k > 0",
+    "vida_util > 0",
+    "w > 0",
+    "beta > 0",
+    "C > 0",
+    "eta > 0",
+    "D >= 0"
+  ]
+}
+```
+- `latex`: La ecuación en formato LaTeX.
+- `restricciones`: Una lista de restricciones o condiciones para la ecuación.
+
+### GET /variables_leyenda
+Obtiene un diccionario con la leyenda de las variables utilizadas en las ecuaciones, describiendo qué representa cada símbolo.
+
+**Ejemplo de request:**
+```http
+GET /variables_leyenda
+```
+
+**Ejemplo de respuesta:**
+```json
+{
+  "Te": "Temperatura externa o del fluido caliente (\u00b0C)",
+  "Ta": "Temperatura ambiente o del fluido frío (\u00b0C)",
+  "Ti": "Temperatura interna o de la superficie aislada (\u00b0C)",
+  "H": "Dimensión característica (m)",
+  "v": "Velocidad del fluido (m/s)",
+  "vida_util": "Vida útil de la instalación (años)",
+  "w": "Costo de la energía ($/kWh)",
+  "beta": "Factor de utilización o tiempo de operación (horas/año)",
+  "C": "Costo del aislamiento por unidad de volumen o área ($/m\u00b3 o $/m\u00b2)",
+  "k": "Conductividad térmica del material aislante (W/mK)",
+  "e": "Espesor del aislamiento (m)",
+  "h": "Coeficiente de transferencia de calor por convección (W/m\u00b2K)",
+  "D": "Diámetro de la tubería (m)",
+  "eta": "Eficiencia del sistema de calentamiento/enfriamiento (%)"
+}
+```
+
+### POST /plot_espesor
+Genera datos para graficar cómo varía el espesor óptimo (u otra variable principal) en función de otra variable seleccionada, dentro de un rango especificado.
+
+**Ejemplo de request:**
+```json
+POST /plot_espesor
+Content-Type: application/json
+{
+  "equation_key": "optimo_economico_tuberia",
+  "variable": "Ta", // Variable que irá en el eje X del gráfico
+  "known_values": { // Valores fijos para las otras variables
+    "Te": 100,
+    "H": 0.1,     // o "diametro": 0.1
+    "v": 1.5,
+    "vida_util": 15,
+    "w": 0.10,
+    "beta": 8000,
+    "C": 150,
+    "k": 0.035,
+    "eta": 90
+    // No incluir 'h' si se quiere que se calcule automáticamente
+  },
+  "flow_type": "externo", // Necesario si 'h' se calcula automáticamente
+  "orientation": "horizontal", // Necesario si 'h' se calcula automáticamente
+  "min_val": 5,     // Valor mínimo para la variable en el eje X (Ta)
+  "max_val": 40,    // Valor máximo para la variable en el eje X (Ta)
+  "step_val": 2     // Incremento para la variable en el eje X (Ta)
+}
+```
+
+**Ejemplo de respuesta:**
+```json
+{
+  "x": [5.0, 7.0, 9.0, 11.0, /* ... */, 39.0],
+  "y": [0.085, 0.082, 0.079, 0.076, /* ... */, 0.032], // Valores de espesor 'e' calculados
+  "h_vals": [10.5, 10.8, 11.1, 11.3, /* ... */, 14.5] // Valores de 'h' calculados para cada punto si aplica
+}
+```
+- `x`: Lista de valores para la variable del eje X.
+- `y`: Lista de valores calculados para el espesor óptimo (o la variable principal) correspondientes a cada valor de `x`.
+- `h_vals`: Lista de valores del coeficiente de convección `h` calculados para cada punto, si `h` no se proporcionó y la ecuación lo requiere.
+
 ## Empaquetado con PyInstaller
 Puedes generar un ejecutable standalone ejecutando el script `pyIntaller.bat` que se encuentra en la raíz del proyecto.
 
@@ -165,17 +265,16 @@ Consulta el contenido del archivo `pyIntaller.bat` para ver los detalles especí
 
 ## Licencia
 Este proyecto está bajo la Licencia MIT. Ver [LICENSE](LICENSE).
-
-## Contacto
-Autor: Ben Gonzalez
-
+ 
 ¿Dudas o sugerencias? Abre un issue o contacta por GitHub.
 
 ---
-Esta calculadora de espesores para un cálculo de óptimo económico es resultado del trabajo de grado:
+Esta calculadora de espesores para un cálculo de óptimo económico es resulstado del trabajo de grado:
 
 *«IMPLEMENTACIÓN DE UN MODELO MATEMÁTICO PARA CALCULAR EL ESPESOR ÓPTIMO-ECONÓMICO DEL AISLAMIENTO TÉRMICO EN SISTEMAS DE TRANSPORTE Y ALMACENAMIENTO DE FLUIDOS»*
 
 De la universidad:
 
-**UNIVERSIDAD NACIONAL EXPERIMENTAL POLITÉCNICA “ANTONIO JOSÉ DE SUCRE” VICE-RECTORADO BARQUISIMETO DEPARTAMENTO DE INGENIERÍA MECÁNICA**
+**UNIVERSIDAD NACIONAL EXPERIMENTAL POLITÉCNICA “ANTONIO JOSÉ DE SUCRE” VICE-RECTORADO BARQUISIMETO**
+
+  **DEPARTAMENTO DE INGENIERÍA MECÁNICA**
