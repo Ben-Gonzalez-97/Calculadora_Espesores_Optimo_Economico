@@ -33,7 +33,7 @@ Calculadora_Espesores_Optimo_Economico/
 │   ├── app.js
 │   └── styles.css
 ├── requirements.txt
-├── pyIntaller.txt
+├── pyIntaller.bat
 ├── LICENSE
 └── README.md
 ```
