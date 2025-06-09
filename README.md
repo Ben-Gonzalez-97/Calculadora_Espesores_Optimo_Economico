@@ -149,19 +149,19 @@ Content-Type: application/json
 - `flow_type` y `orientation`: Opcionales, para cálculo automático de coeficiente de convección.
 
 ## Empaquetado con PyInstaller
-Puedes generar un ejecutable standalone:
+Puedes generar un ejecutable standalone ejecutando el script `pyIntaller.bat` que se encuentra en la raíz del proyecto.
 
-```sh
-pyinstaller --name CalculadoraEspesores --onefile \
-  --add-data "Front;Front" \
-  --add-data "BackAPI/src/api;api" \
-  --add-data "BackAPI/src/services;services" \
-  --add-data ".env;." \
-  --paths "BackAPI/src" \
-  "BackAPI/src/main.py"
+Este script utiliza PyInstaller para empaquetar la aplicación Flask junto con el frontend y todas las dependencias necesarias en un único archivo ejecutable.
+
+Asegúrate de tener PyInstaller instalado (`pip install pyinstaller`) y estar en el directorio raíz del proyecto antes de ejecutar el script.
+
+```bat
+.\\pyIntaller.bat
 ```
 
-Consulta el archivo `pyIntaller.txt` para detalles.
+El ejecutable resultante se encontrará en la carpeta `dist`.
+
+Consulta el contenido del archivo `pyIntaller.bat` para ver los detalles específicos del comando de PyInstaller utilizado.
 
 ## Licencia
 Este proyecto está bajo la Licencia MIT. Ver [LICENSE](LICENSE).
