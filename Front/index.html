@@ -285,13 +285,13 @@
                   <p class="text-[#101518] text-lg font-bold leading-tight tracking-[-0.015em] max-w-[480px] text-center">No hay parámetros guardados</p>
                   <p class="text-[#101518] text-sm font-normal leading-normal max-w-[480px] text-center">Guarda tus parámetros de cálculo para uso futuro.</p>
                 </div>
-                <button
-                  id="btnGuardarParametros"
-                  class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaeef1] text-[#101518] text-sm font-bold leading-normal tracking-[0.015em]"
-                >
-                  <span class="truncate">Guardar Parámetros Actuales</span>
-                </button>
               </div>
+              <button
+                id="btnGuardarParametros"
+                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaeef1] text-[#101518] text-sm font-bold leading-normal tracking-[0.015em] mt-4 self-center"
+              >
+                <span class="truncate">Guardar Parámetros Actuales</span>
+              </button>
             </div>
             <h3 class="text-[#101518] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Gráfico</h3>
             <div class="flex flex-wrap items-end gap-x-4 gap-y-2 px-4 py-3 w-full">
@@ -381,7 +381,62 @@
       </div>
     </div>
 
+    <!-- Modal para Ingresar Nombre de Catálogo -->
+    <div id="input-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center hidden px-4 z-50">
+      <div class="relative mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white">
+        <h3 id="input-modal-title" class="text-lg leading-6 font-medium text-gray-900 mb-4">Guardar Parámetros</h3>
+        <div class="mt-2">
+          <p id="input-modal-prompt-text" class="text-sm text-gray-700 mb-2">Ingresa un nombre para este conjunto de parámetros:</p>
+          <input type="text" id="input-modal-field" class="form-input w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" />
+          <p id="input-modal-error" class="text-red-500 text-xs mt-1 hidden">El nombre no puede estar vacío.</p>
+        </div>
+        <div class="mt-4 flex justify-end gap-2">
+          <button id="input-modal-cancel-btn" class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">Cancelar</button>
+          <button id="input-modal-save-btn" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Guardar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal para Mensajes (Alertas) -->
+    <div id="message-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center hidden px-4 z-50">
+      <div class="relative mx-auto p-5 border w-full max-w-sm shadow-lg rounded-md bg-white">
+        <div class="mt-3 text-center">
+          <h3 id="message-modal-title" class="text-lg leading-6 font-medium text-gray-900">Mensaje</h3>
+          <div class="mt-2 px-7 py-3">
+            <p id="message-modal-text" class="text-sm text-gray-700"></p>
+          </div>
+          <div class="items-center px-4 py-3">
+            <button id="message-modal-ok-btn" class="px-4 py-2 bg-blue-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
+              Aceptar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal para Confirmación (Eliminar) -->
+    <div id="confirmation-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center hidden px-4 z-50">
+      <div class="relative mx-auto p-5 border w-full max-w-sm shadow-lg rounded-md bg-white">
+        <h3 id="confirmation-modal-title" class="text-lg leading-6 font-medium text-gray-900 mb-4">Confirmar Acción</h3>
+        <div class="mt-2">
+          <p id="confirmation-modal-text" class="text-sm text-gray-700"></p>
+        </div>
+        <div class="mt-4 flex justify-end gap-2">
+          <button id="confirmation-modal-cancel-btn" class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">Cancelar</button>
+          <button id="confirmation-modal-confirm-btn" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">Confirmar</button>
+        </div>
+      </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="/app.js"></script>
+    <!-- <script src="/app.js"></script> --> <!-- Original app.js, comentado según solicitud -->
+
+    <!-- Nuevos scripts modularizados -->
+    <script src="/apiService.js"></script>
+    <script src="/modalHandler.js"></script> <!-- Movido antes de catalogManager -->
+    <script src="/catalogManager.js"></script> <!-- Define valoresBase, leyendas, etc. -->
+    <script src="/calculationHandler.js"></script>
+    <script src="/graphHandler.js"></script>
+    <script src="/uiSetup.js"></script> <!-- Debe ser el último para inicializar todo -->
   </body>
 </html>
