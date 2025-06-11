@@ -10,7 +10,7 @@ FROM nginx:alpine AS final
 RUN rm -rf /usr/share/nginx/html/*
 
 # Copy frontend static files
-COPY --link index.html app.js styles.css /usr/share/nginx/html/
+COPY --link index.html *.js /usr/share/nginx/html/
 
 # Security: run as non-root user (nginx image uses user 101 by default)
 # (nginx:alpine already runs as non-root by default)

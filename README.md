@@ -30,8 +30,12 @@ Calculadora_Espesores_Optimo_Economico/
 │       └── schemas/
 ├── Front/
 │   ├── index.html
-│   ├── app.js
-│   └── styles.css
+│   ├── apiService.js
+│   ├── calculationHandler.js
+│   ├── catalogManager.js
+│   ├── graphHandler.js
+│   ├── modalHandler.js
+│   └── uiSetup.js
 ├── requirements.txt
 ├── pyIntaller.bat
 ├── LICENSE
