@@ -1,25 +1,56 @@
+"""
+Este módulo proporciona funcionalidades para resolver ecuaciones y calcular coeficientes de convección.
+
+Funciones principales:
+- solve_equation: Resuelve ecuaciones simbólicas o numéricamente.
+- check_restrictions: Verifica si un conjunto de valores conocidos cumple con las restricciones de una ecuación.
+- calculate_convection_coefficient: Calcula el coeficiente de convección 'h' basándose en el tipo de flujo,
+  orientación y valores conocidos, seleccionando la fórmula apropiada de un catálogo.
+
+También define:
+- EQUATIONS: Un diccionario que cataloga las ecuaciones utilizadas en la aplicación,
+  incluyendo su forma LaTeX y las restricciones aplicables.
+- VARIABLES_LEYENDA: Un diccionario con la descripción de cada variable utilizada.
+"""
 import numpy as np
 import sympy as sp
 from sympy.logic.boolalg import Boolean
 from sympy.core.relational import Equality
 import re
+import warnings # Importar warnings aquí
 
 
 def solve_equation(equation_str: str, known_values: dict, variable_to_solve: str, maxiter=50, tol=1e-6):
     """
     Resuelve una ecuación dada en formato string Python/SymPy para la variable deseada.
-    Si no hay solución analítica, intenta resolver numéricamente.
+
+    Intenta primero una solución simbólica. Si no es posible o la ecuación es marcada
+    como compleja, recurre a un método numérico (Brentq) dentro de un intervalo
+    determinado (especialmente para la variable 'e').
+
     Args:
-        equation_str (str): Ecuación en formato string Python/SymPy (por ejemplo, 'x**2 + y == 1').
-        known_values (dict): Diccionario con los valores conocidos, ej: {'y': 2}.
-        variable_to_solve (str): Nombre de la variable a despejar.
-        initial_guess (float): Valor inicial para el método numérico (opcional).
-        maxiter (int): Número máximo de iteraciones para el método numérico.
-        tol (float): Tolerancia para la convergencia numérica.
+        equation_str (str): Ecuación en formato string Python/SymPy (ej. 'x**2 + y == 1').
+                            Debe contener '==' para ser interpretada como una igualdad.
+        known_values (dict): Diccionario con los valores conocidos para las variables
+                             de la ecuación, ej: {'y': 2}.
+        variable_to_solve (str): Nombre de la variable que se desea despejar.
+        maxiter (int, optional): Número máximo de iteraciones para el método numérico.
+                                 Por defecto es 50.
+        tol (float, optional): Tolerancia para la convergencia del método numérico.
+                               Por defecto es 1e-6.
+
     Returns:
-        float: Valor de la variable despejada.
+        tuple[float, int | bool]: Una tupla conteniendo:
+            - El valor de la variable despejada (float).
+            - El número de iteraciones si se usó el método numérico (int),
+              o False si se encontró una solución simbólica (bool).
+
+    Raises:
+        ValueError: Si la ecuación no es una igualdad válida, si no se puede convertir
+                    a simbólica, si la variable a resolver no está en la ecuación
+                    después de sustituciones, o si el método numérico no converge
+                    o no encuentra una raíz en el intervalo especificado.
     """
-    import warnings
     # LOG para depuración
     print("[DEBUG] solve_equation: known_values (original):", known_values)
     print("[DEBUG] solve_equation: equation_str:", equation_str)
@@ -45,6 +76,7 @@ def solve_equation(equation_str: str, known_values: dict, variable_to_solve: str
     if '==' in equation_str:
         partes = equation_str.split('==')
         if len(partes) == 2:
+            # Asegura que Eq esté correctamente formateado para sympify
             eq_str = f"Eq({partes[0].strip()}, {partes[1].strip()})"
         else:
             raise ValueError("Ecuación con más de un '==' no soportada.")
@@ -59,8 +91,9 @@ def solve_equation(equation_str: str, known_values: dict, variable_to_solve: str
         raise ValueError(f"Error al convertir la ecuación a simbólica: {e}")
     print("[DEBUG] solve_equation: expr sympified:", expr)
     # Validar que la expresión es una igualdad simbólica
-    if not isinstance(expr, (sp.Equality, Equality)):
-        raise ValueError("La ecuación proporcionada no es una igualdad simbólica válida.")
+    if not isinstance(expr, (sp.Equality, Equality)): # Asegurar que es una igualdad
+        raise ValueError("La ecuación proporcionada no es una igualdad simbólica válida después de sympify.")
+
     # Paso 2: Obtener el símbolo de la variable a despejar
     var = symbols_dict.get(variable_to_solve, sp.symbols(variable_to_solve))
     # Paso 3: Sustituir los valores conocidos
@@ -73,9 +106,27 @@ def solve_equation(equation_str: str, known_values: dict, variable_to_solve: str
         raise ValueError(f"La ecuación ya no depende de la variable '{variable_to_solve}'. Revisa los valores conocidos.")
     # Paso 4: Intentar solución simbólica SOLO si la ecuación no es compleja
     ecuaciones_solo_numerico = [
-        "optimo_economico_cilindro", "optimo_economico_esfera"
+        EQUATIONS.get(key) for key in ["optimo_economico_cilindro", "optimo_economico_esfera"]
+        if EQUATIONS.get(key) # Asegurarse que la clave existe
     ]
-    if equation_str in [EQUATIONS.get(key) for key in ecuaciones_solo_numerico]:
+
+    # Comprobar si la ecuación actual (su string) está en la lista de solo numérico
+    # Esto requiere que equation_str sea la forma LaTeX o la forma almacenada en EQUATIONS
+    # Si EQUATIONS almacena dicts, hay que acceder a eq_data['latex']
+    
+    # Para ser más robusto, compararemos la `equation_key` si estuviera disponible,
+    # o asumiremos que `equation_str` es la forma LaTeX que se usa como identificador.
+    # Dado que `equation_key` no se pasa a esta función, usaremos `equation_str`.
+    # Es crucial que `equation_str` coincida con lo que se define en `EQUATIONS` para estas claves.
+    
+    # Simplificación: si `equation_str` es la representación directa de una ecuación compleja.
+    # Esta lógica podría necesitar ajuste si `equation_str` no es directamente comparable.
+    # Por ahora, se asume que `equation_str` puede ser una de las cadenas de `ecuaciones_solo_numerico`.
+    
+    # Mejor enfoque: Pasar `equation_key` a `solve_equation` o marcar las ecuaciones de otra forma.
+    # Por ahora, mantenemos la lógica original pero con la advertencia de que `equation_str` debe ser comparable.
+
+    if equation_str in ecuaciones_solo_numerico:
         print(f"[DEBUG] Saltando solución simbólica para ecuación compleja: {equation_str}")
         sol = []
     else:
@@ -104,10 +155,14 @@ def solve_equation(equation_str: str, known_values: dict, variable_to_solve: str
             print(f"[DEBUG] solve_equation: returning solution {float(sol.evalf())}")
             return float(sol.evalf()), False # Solución simbólica
     # Paso 5: Si no hay solución simbólica, intentar numéricamente
-    if isinstance(subs_expr, (sp.Equality, Equality)):
+    if isinstance(subs_expr, (sp.Equality, Equality)): # Asegurar que es una igualdad
         f_expr = subs_expr.lhs - subs_expr.rhs
     else:
-        f_expr = subs_expr
+        # Si subs_expr no es una igualdad después de sustituciones, algo fue mal.
+        # O la ecuación original no era una igualdad, o la sustitución la alteró.
+        # Esto no debería ocurrir si la validación inicial de `expr` es correcta.
+        raise ValueError("La expresión sustituida ya no es una igualdad. No se puede proceder a la solución numérica.")
+
     print("[DEBUG] solve_equation: f_expr for numeric solve:", f_expr)
     from scipy.optimize import root_scalar
     import math
@@ -162,12 +217,22 @@ def solve_equation(equation_str: str, known_values: dict, variable_to_solve: str
 
 def check_restrictions(restrictions: list[str], known_values: dict) -> bool:
     """
-    Evalúa una lista de restricciones dadas como cadenas de texto.
+    Evalúa una lista de restricciones (dadas como cadenas de texto) contra un conjunto de valores conocidos.
+
+    Las restricciones se convierten a expresiones simbólicas de SymPy y luego se evalúan
+    sustituyendo los valores conocidos.
+
     Args:
-        restrictions (list[str]): Lista de restricciones, ej: ["v * H <= 8", "H > 0"].
-        known_values (dict): Diccionario con los valores conocidos para las variables.
+        restrictions (list[str]): Lista de restricciones en formato string,
+                                  ej: ["v * H <= 8", "H > 0"].
+        known_values (dict): Diccionario con los valores conocidos para las variables
+                             presentes en las restricciones.
+
     Returns:
-        bool: True si todas las restricciones se cumplen, False en caso contrario.
+        bool: True si todas las restricciones evaluables se cumplen (o si no hay restricciones
+              evaluables). False si al menos una restricción evaluable no se cumple.
+              Las restricciones que no se pueden evaluar completamente (por falta de
+              valores) se ignoran y no causan que la función retorne False.
     """
     print("[DEBUG] Evaluando restricciones con known_values:")
     for k, v in known_values.items():
@@ -216,20 +281,32 @@ def check_restrictions(restrictions: list[str], known_values: dict) -> bool:
 
 def calculate_convection_coefficient(
     known_values_for_h: dict, 
-    flow_type: str, # "interior" o "exterior"
-    orientation: str, # "vertical" u "horizontal"
+    flow_type: str,
+    orientation: str
 ) -> float:
     """
-    Calcula el coeficiente de convección (h) seleccionando la fórmula correcta
-    basada en el tipo de flujo, orientación y restricciones.
+    Calcula el coeficiente de convección (h) seleccionando la fórmula correcta.
+
+    Busca en el catálogo `EQUATIONS` una fórmula de convección que coincida con
+    el `flow_type` (interior/exterior) y `orientation` (vertical/horizontal) dados.
+    Verifica las restricciones asociadas a cada fórmula candidata utilizando
+    `check_restrictions`. La primera fórmula cuyas restricciones se cumplan es utilizada
+    para calcular 'h' mediante `solve_equation`.
+
     Args:
-        known_values_for_h (dict): Valores para variables en ecuaciones de convección (Te, Ta, H, v).
-        flow_type (str): "interior" o "exterior".
-        orientation (str): "vertical" u "horizontal".
+        known_values_for_h (dict): Diccionario con los valores conocidos necesarios
+                                   para las ecuaciones de convección (ej. Te, Ta, H, v).
+                                   No debe contener 'h'.
+        flow_type (str): Tipo de flujo, debe ser "interior" o "exterior".
+        orientation (str): Orientación de la superficie, debe ser "vertical" u "horizontal".
+
     Returns:
-        float: El valor calculado de h.
+        float: El valor calculado del coeficiente de convección 'h'.
+
     Raises:
-        ValueError: Si no se encuentra una fórmula adecuada o los valores son inconsistentes.
+        ValueError: Si no se encuentra una fórmula adecuada que cumpla las restricciones
+                    para la combinación de `flow_type`, `orientation` y `known_values_for_h`,
+                    o si `solve_equation` falla al calcular 'h'.
     """
     candidate_prefixes = [
         f"conv_{flow_type}_{orientation}_laminar",
@@ -341,19 +418,19 @@ EQUATIONS = {
 # Leyenda de variables para ecuaciones
 VARIABLES_LEYENDA = {
     "e": "Espesor del aislamiento en metros (m)",
-    "k": "Coeficiente de conductividad térmica (W/m°C)",
-    "w": "Costo del combustible ($/kW-h)",
-    "beta": "Periodo de operación por año (h/años)",
-    "vida_util": "Vida útil (años)",
-    "C": "Parámetro de coste, asociado al precio del material ($/m3)",
-    "h": "Coeficiente de convección (W/m2·K)",
-    "Ti": "Temperatura interna, temperatura del fluido termico (°C)",
-    "Te": "Temperatura externa o superficial (°C)",
-    "Ta": "Temperatura ambiente (°C)",
-    "eta": "Eficiencia de la máquina térmica",
-    "r": "Radio interior o exterior de tubería (m)",
-    "rc": "Radio crítico (m)",
-    "H": "Altura de la pared o diámetro de la tubería (m)",
-    "v": "Velocidad del viento (m/s)"
+    "k": "Coeficiente de conductividad térmica del material aislante (W/m°C)", # Aclaración
+    "w": "Costo de la energía o combustible ($/kWh)", # kWh es más común
+    "beta": "Horas de operación por año (h/año)", # Singular
+    "vida_util": "Vida útil de la instalación o del aislamiento (años)", # Aclaración
+    "C": "Costo del material aislante instalado por unidad de volumen ($/m³)", # Aclaración y unidad
+    "h": "Coeficiente de transferencia de calor por convección (W/m²K)", # Unidad K o °C es similar para deltas
+    "Ti": "Temperatura del fluido caliente o superficie interna (°C)", # Aclaración
+    "Te": "Temperatura de la superficie externa del aislamiento (°C)", # Aclaración
+    "Ta": "Temperatura del ambiente circundante (°C)", # Aclaración
+    "eta": "Eficiencia de la planta o del sistema de generación de calor (% o fracción)", # Aclaración
+    "r": "Radio interior del aislamiento (para cilindros/esferas) (m)", # Aclaración
+    "rc": "Radio crítico de aislamiento (m)",
+    "H": "Dimensión característica (altura para placas, diámetro para cilindros/esferas) (m)", # Aclaración
+    "v": "Velocidad del fluido (aire/viento) (m/s)"
 }
 

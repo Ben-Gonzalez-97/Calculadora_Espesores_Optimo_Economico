@@ -1,9 +1,33 @@
-// Este módulo maneja la gestión de catálogos de parámetros.
+/**
+ * @file catalogManager.js
+ * @summary Gestiona la lógica para guardar, cargar y eliminar catálogos de parámetros de cálculo
+ * utilizando el LocalStorage del navegador. También se encarga de renderizar la lista de
+ * catálogos guardados y de interactuar con el usuario a través de modales para estas operaciones.
+ */
 
+/**
+ * Clave utilizada para almacenar los catálogos de parámetros en LocalStorage.
+ * @const {string}
+ */
 const CATALOG_STORAGE_KEY = 'parameter_catalogs';
-const MAX_CATALOG_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
-const MAX_CATALOG_ENTRIES = 50; 
 
+/**
+ * Tamaño máximo permitido para el string JSON de todos los catálogos en LocalStorage (en bytes).
+ * @const {number}
+ */
+const MAX_CATALOG_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
+
+/**
+ * Número máximo de entradas de catálogo permitidas.
+ * @const {number}
+ */
+const MAX_CATALOG_ENTRIES = 50;
+
+/**
+ * Valores base o por defecto para los campos de entrada del formulario.
+ * Usado para inicializar la estructura de un nuevo catálogo y como fallback.
+ * @const {Object<string, string|number>}
+ */
 const valoresBase = {
     vida_util: 15,
     w: 0.04,
@@ -22,6 +46,11 @@ const valoresBase = {
     orientacion: '' 
 };
 
+/**
+ * Leyendas o descripciones para cada una de las variables/parámetros.
+ * Utilizado para mostrar información descriptiva en la UI.
+ * @const {Object<string, string>}
+ */
 const leyendas = {
     vida_util: "Vida util (años)",
     w: "Costo del combustible ($/kW-h)",
@@ -41,6 +70,11 @@ const leyendas = {
 };
 
 
+/**
+ * Obtiene los valores actuales de los campos de entrada del formulario.
+ * @returns {Object<string, string|number|null>} Un objeto donde las claves son los nombres de los parámetros
+ * y los valores son los datos ingresados por el usuario. Los campos numéricos vacíos se devuelven como null.
+ */
 function getCurrentInputValues() {
     const values = {};
     for (const key in valoresBase) {
@@ -65,6 +99,12 @@ function getCurrentInputValues() {
     return values;
 }
 
+/**
+ * Carga un conjunto de valores en los campos de entrada correspondientes del formulario.
+ * @param {Object<string, string|number|null>} values - Objeto con los valores a cargar.
+ *                                                      Los valores null se interpretan como campos vacíos.
+ * @returns {void}
+ */
 function loadValuesToInputs(values) {
     for (const key in values) {
         const inputElement = document.getElementById(`inp_${key}`);
@@ -74,6 +114,13 @@ function loadValuesToInputs(values) {
     }
 }
 
+/**
+ * Guarda un catálogo de parámetros con el nombre especificado en LocalStorage de forma segura.
+ * Verifica límites de tamaño y número de entradas antes de guardar.
+ * @param {string} name - El nombre para el catálogo.
+ * @param {Object<string, string|number|null>} values - Los valores del catálogo a guardar.
+ * @returns {boolean} True si el catálogo se guardó exitosamente, false en caso contrario (ej. límite excedido).
+ */
 function saveCatalogSafe(name, values) {
     try {
         let catalogs = JSON.parse(localStorage.getItem(CATALOG_STORAGE_KEY) || '{}');
@@ -104,6 +151,12 @@ function saveCatalogSafe(name, values) {
 }
 
 
+/**
+ * Renderiza la lista de catálogos de parámetros guardados en el contenedor HTML designado.
+ * Si no hay catálogos, muestra un mensaje indicándolo.
+ * Añade listeners a los botones de cargar y eliminar para cada catálogo.
+ * @returns {void}
+ */
 function renderListaParametros() {
     const container = document.getElementById('parametrosGuardadosContainer');
     if (!container) {
@@ -155,6 +208,13 @@ function renderListaParametros() {
 
 // --- Las funciones de modal showInputModal, showMessageModal, showConfirmationModal se han movido a modalHandler.js ---
 
+/**
+ * Inicia el proceso para guardar los parámetros actuales del formulario como un nuevo catálogo.
+ * Muestra un modal para que el usuario ingrese un nombre para el catálogo.
+ * Si se proporciona un nombre y la operación de guardado es exitosa, actualiza la lista de catálogos
+ * y muestra un mensaje de confirmación.
+ * @returns {void}
+ */
 function guardarParametrosActuales() {
     const randomNumber = Math.floor(10000 + Math.random() * 90000); // Genera un número entre 10000 y 99999
     const nombreSugerido = `Parametro-${new Date().toISOString().slice(0,10)}-ID-${randomNumber}`;
@@ -180,6 +240,12 @@ function guardarParametrosActuales() {
         });
 }
 
+/**
+ * Carga los valores de un catálogo guardado (identificado por su nombre) en el formulario.
+ * Pide confirmación al usuario antes de sobrescribir los valores actuales.
+ * @param {string} name - El nombre del catálogo a cargar.
+ * @returns {void}
+ */
 function cargarParametros(name) {
     // Llamar a showConfirmationModal para confirmar la carga
     showConfirmationModal(`¿Estás seguro de que quieres cargar los parámetros del catálogo "${name}"? Los valores actuales en el formulario se sobrescribirán.`, "Confirmar Carga")
@@ -211,6 +277,12 @@ function cargarParametros(name) {
         });
 }
 
+/**
+ * Elimina un catálogo de parámetros guardado (identificado por su nombre) del LocalStorage.
+ * Pide confirmación al usuario antes de la eliminación.
+ * @param {string} name - El nombre del catálogo a eliminar.
+ * @returns {void}
+ */
 function eliminarParametros(name) {
     // Llamar a showConfirmationModal desde modalHandler.js
     showConfirmationModal(`¿Estás seguro de que quieres eliminar el catálogo "${name}"?`, "Confirmar Eliminación")
@@ -238,6 +310,12 @@ function eliminarParametros(name) {
         });
 }
 
+/**
+ * Inicializa el gestor de catálogos.
+ * Configura el event listener para el botón de "Guardar Parámetros" y
+ * renderiza la lista inicial de catálogos guardados.
+ * @returns {void}
+ */
 function initCatalogManager() {
     const btnGuardarParametros = document.getElementById('btnGuardarParametros');
     if (btnGuardarParametros) {

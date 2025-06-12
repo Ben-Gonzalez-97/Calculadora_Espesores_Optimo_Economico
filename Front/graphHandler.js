@@ -1,7 +1,22 @@
-// Este módulo maneja la lógica de graficación.
+/**
+ * @file Maneja la lógica de inicialización y actualización de la gráfica de espesor.
+ * @summary Este módulo se encarga de la interacción del usuario con los controles de la gráfica,
+ * la obtención de datos del backend y la representación visual usando Chart.js.
+ */
 
-let chartEspesor = null; 
+/**
+ * Instancia del gráfico Chart.js para mostrar el espesor.
+ * @type {Chart | null}
+ */
+let chartEspesor = null;
 
+/**
+ * Rangos por defecto (mínimo, máximo, paso) para la graficación de diferentes variables.
+ * Estos valores se usan para prellenar los campos de entrada del rango de la gráfica
+ * cuando el usuario selecciona una variable en el desplegable.
+ * @const
+ * @type {Object<string, [number, number, number]>}
+ */
 const defaultGraphRanges = {
     'Ta': [10, 50, 1],    
     'Te': [10, 100, 5],   
@@ -16,6 +31,14 @@ const defaultGraphRanges = {
     'eta': [10, 100, 5]     
 };
 
+/**
+ * Inicializa los manejadores de eventos y la lógica para la sección de graficación.
+ *
+ * Configura los listeners para:
+ * - El cambio en el selector de variable para la gráfica (actualiza los campos de rango).
+ * - El clic en el botón "Graficar" (recopila datos, llama a la API y renderiza la gráfica).
+ * @returns {void}
+ */
 function initGraphHandler() {
     const graficarBtn = document.getElementById('graficar-btn');
     const selectVariableGrafica = document.getElementById('select_variable_grafica');
@@ -27,7 +50,7 @@ function initGraphHandler() {
     const inpGraficaPaso = document.getElementById('inp_grafica_paso');
 
     if (!graficarBtn || !selectVariableGrafica || !canvasGrafica || !resultadoGrafica || !inpGraficaMin || !inpGraficaMax || !inpGraficaPaso) {
-        console.error("Elementos del DOM para la gráfica no encontrados.");
+        console.error("Elementos del DOM para la gráfica no encontrados. La funcionalidad de graficación no estará disponible.");
         return;
     }
 
@@ -47,6 +70,7 @@ function initGraphHandler() {
         }
     });
     
+    // Disparar el evento change al inicio si ya hay una variable seleccionada
     if (selectVariableGrafica.value) {
         selectVariableGrafica.dispatchEvent(new Event('change'));
     }
@@ -72,6 +96,7 @@ function initGraphHandler() {
             return;
         }
 
+        // Recopilación de valores de entrada
         const vida_util = Number(document.getElementById('inp_vida_util').value);
         const w_val = Number(document.getElementById('inp_w').value); 
         const beta = Number(document.getElementById('inp_beta').value);
@@ -128,6 +153,7 @@ function initGraphHandler() {
         const max_val = parseFloat(inpGraficaMax.value);
         const step_val = parseFloat(inpGraficaPaso.value);
 
+        // Validaciones de rango
         if (isNaN(min_val) || isNaN(max_val) || isNaN(step_val) || step_val <= 0) {
             resultadoGrafica.textContent = 'Los valores de rango (Mín, Máx, Paso) deben ser números válidos y el paso mayor a cero.';
             resultadoGrafica.classList.add('text-red-600');
@@ -181,7 +207,7 @@ function initGraphHandler() {
                 }
                 const datasets = [
                     {
-                        label: `Espesor (m) vs ${leyendas[variableSeleccionada]}`,
+                        label: `Espesor (m) vs ${leyendas[variableSeleccionada] || variableSeleccionada}`,
                         data: data.y.map((val, index) => ({ x: data.x[index], y: val })),
                         borderColor: 'rgb(75, 192, 192)',
                         backgroundColor: 'rgba(75, 192, 192, 0.2)', // Color de relleno para el área
@@ -193,7 +219,7 @@ function initGraphHandler() {
 
                 if (data.h_vals && data.h_vals.some(h => h !== null)) {
                     datasets.push({
-                        label: `Coef. Convección (W/m²°C) vs ${leyendas[variableSeleccionada]}`,
+                        label: `Coef. Convección (W/m²°C) vs ${leyendas[variableSeleccionada] || variableSeleccionada}`,
                         data: data.h_vals.map((val, index) => ({ x: data.x[index], y: val })),
                         borderColor: 'rgb(255, 99, 132)',
                         backgroundColor: 'rgba(255, 99, 132, 0.2)', // Color de relleno para el área
@@ -296,7 +322,7 @@ function initGraphHandler() {
             console.error('Error al graficar:', error);
             resultadoGrafica.textContent = `Error en la solicitud de gráfica: ${error.message}`;
             resultadoGrafica.classList.add('text-red-600');
-            graficarBtn.classList.remove('bg-yellow-500', 'hover:bg-yellow-700', 'bg-green-500', 'hover:bg_green-700');
+            graficarBtn.classList.remove('bg-yellow-500', 'hover:bg-yellow-700', 'bg-green-500', 'hover:bg-green-700');
             graficarBtn.classList.add('bg-red-500', 'hover:bg-red-700');
         } finally {
             graficarBtn.disabled = false;

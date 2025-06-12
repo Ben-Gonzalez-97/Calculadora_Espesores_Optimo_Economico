@@ -1,5 +1,8 @@
+<!-- filepath: c:\Users\oreon\OneDrive\Documentos\Optimo económico\Calculadora de Espesores\Calculadora_Espesores_Optimo_Economico\Front\index.html -->
+<!-- Estructura principal de la página HTML -->
 <html>
   <head>
+    <!-- Metadatos y enlaces a hojas de estilo y fuentes -->
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
     <link
       rel="stylesheet"
@@ -11,17 +14,23 @@
     <title>Calculadora</title>
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
 
+    <!-- Enlace a Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   </head>
   <body>
+    <!-- Contenedor principal de la aplicación -->
     <div
       class="relative flex size-full min-h-screen flex-col bg-gray-50 group/design-root overflow-x-hidden"
       style='--select-button-svg: url(&apos;data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2724px%27 height=%2724px%27 fill=%27rgb(92,119,138)%27 viewBox=%270 0 256 256%27%3e%3cpath d=%27M181.66,170.34a8,8,0,0,1,0,11.32l-48,48a8,8,0,0,1-11.32,0l-48-48a8,8,0,0,1,11.32-11.32L128,212.69l42.34-42.35A8,8,0,0,1,181.66,170.34Zm-96-84.68L128,43.31l42.34,42.35a8,8,0,0,0,11.32-11.32l-48-48a8,8,0,0,0-11.32,0l-48,48A8,8,0,0,0,85.66,85.66Z%27%3e%3c/path%3e%3c/svg%3e&apos;); font-family: "Space Grotesk", "Noto Sans", sans-serif;'
     >
+      <!-- Contenedor del diseño principal -->
       <div class="layout-container flex h-full grow flex-col">
+        <!-- Encabezado de la página -->
         <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#eaeef1] px-10 py-3">
+          <!-- Logo y título de la aplicación -->
           <div class="flex items-center gap-4 text-[#101518]">
             <div class="size-4">
+              <!-- Icono SVG de la aplicación -->
               <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path
                   fill-rule="evenodd"
@@ -33,12 +42,14 @@
             </div>
             <h2 class="text-[#101518] text-lg font-bold leading-tight tracking-[-0.015em]">Calculadora de Aislamiento</h2>
           </div>
+          <!-- Botón para abrir el modal de información -->
           <div class="flex flex-1 justify-end gap-8">
             <button
               id="info-modal-btn"
               class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 bg-[#eaeef1] text-[#101518] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5"
             >
               <div class="text-[#101518]" data-icon="Question" data-size="20px" data-weight="regular">
+                <!-- Icono SVG de pregunta -->
                 <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
                   <path
                     d="M140,180a12,12,0,1,1-12-12A12,12,0,0,1,140,180ZM128,72c-22.06,0-40,16.15-40,36v4a8,8,0,0,0,16,0v-4c0-11,10.77-20,24-20s24,9,24,20-10.77,20-24,20a8,8,0,0,0-8,8v8a8,8,0,0,0,16,0v-.72c18.24-3.35,32-17.9,32-35.28C168,88.15,150.06,72,128,72Zm104,56A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"
@@ -48,9 +59,12 @@
             </button>
           </div>
         </header>
+        <!-- Contenido principal de la página, dividido en dos columnas -->
         <div class="gap-1 px-6 flex flex-1 justify-center py-5">
+          <!-- Columna izquierda: Parámetros de cálculo -->
           <div class="layout-content-container flex flex-col w-80">
             <h2 class="text-[#101518] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Parámetros de Cálculo</h2>
+            <!-- Sección para seleccionar el tipo de cálculo -->
             <div class="flex max-w-[280px] flex-wrap items-end gap-4 px-4 py-3">
               <label class="flex flex-col min-w-40 flex-1">
                 <p class="text-[#101518] text-base font-medium leading-normal pb-2">Tipo de Cálculo</p>
@@ -65,6 +79,7 @@
                 </select>
               </label>
             </div>
+            <!-- Sección para seleccionar el tipo de entorno -->
             <div class="flex max-w-[280px] flex-wrap items-end gap-4 px-4 py-3">
               <label class="flex flex-col min-w-40 flex-1">
                 <p class="text-[#101518] text-base font-medium leading-normal pb-2">Tipo de Entorno</p>
@@ -78,6 +93,7 @@
                 </select>
               </label>
             </div>
+            <!-- Sección para seleccionar la orientación -->
             <div class="flex max-w-[280px] flex-wrap items-end gap-4 px-4 py-3">
               <label class="flex flex-col min-w-40 flex-1">
                 <p class="text-[#101518] text-base font-medium leading-normal pb-2">Orientación</p>
@@ -91,6 +107,7 @@
                 </select>
               </label>
             </div>
+            <!-- Campo de entrada para la vida útil del aislamiento -->
             <div class="flex max-w-[280px] flex-wrap items-end gap-4 px-4 py-3">
               <label class="flex flex-col min-w-40 flex-1">
                 <p class="text-[#101518] text-base font-medium leading-normal pb-2">Vida Útil del Aislamiento (años)</p>
@@ -103,6 +120,7 @@
                 />
               </label>
             </div>
+            <!-- Campo de entrada para el precio del combustible -->
             <div class="flex max-w-[280px] flex-wrap items-end gap-4 px-4 py-3">
               <label class="flex flex-col min-w-40 flex-1">
                 <p class="text-[#101518] text-base font-medium leading-normal pb-2">Precio del Combustible ($/kWh)</p>
@@ -115,6 +133,7 @@
                 />
               </label>
             </div>
+            <!-- Campo de entrada para la eficiencia del sistema -->
             <div class="flex max-w-[280px] flex-wrap items-end gap-4 px-4 py-3">
               <label class="flex flex-col min-w-40 flex-1">
                 <p class="text-[#101518] text-base font-medium leading-normal pb-2">Eficiencia del Sistema (%)</p>
@@ -128,6 +147,7 @@
                 />
               </label>
             </div>
+            <!-- Campo de entrada para la temperatura de la superficie -->
             <div class="flex max-w-[280px] flex-wrap items-end gap-4 px-4 py-3">
               <label class="flex flex-col min-w-40 flex-1">
                 <p class="text-[#101518] text-base font-medium leading-normal pb-2">Temperatura de la Superficie (°C)</p>
@@ -138,6 +158,7 @@
                 />
               </label>
             </div>
+            <!-- Campo de entrada para la temperatura ambiente -->
             <div class="flex max-w-[280px] flex-wrap items-end gap-4 px-4 py-3">
               <label class="flex flex-col min-w-40 flex-1">
                 <p class="text-[#101518] text-base font-medium leading-normal pb-2">Temperatura Ambiente (°C)</p>
@@ -148,6 +169,7 @@
                 />
               </label>
             </div>
+            <!-- Campo de entrada para la temperatura interna máxima -->
             <div class="flex max-w-[280px] flex-wrap items-end gap-4 px-4 py-3">
               <label class="flex flex-col min-w-40 flex-1">
                 <p class="text-[#101518] text-base font-medium leading-normal pb-2">Temperatura Interna maxima (°C)</p>
@@ -158,6 +180,7 @@
                 />
               </label>
             </div>
+            <!-- Campo de entrada para la velocidad del viento -->
             <div class="flex max-w-[280px] flex-wrap items-end gap-4 px-4 py-3">
               <label class="flex flex-col min-w-40 flex-1">
                 <p class="text-[#101518] text-base font-medium leading-normal pb-2">Velocidad del Viento (m/s)</p>
@@ -170,6 +193,7 @@
                 />
               </label>
             </div>
+            <!-- Campo de entrada para el diámetro -->
             <div class="flex max-w-[280px] flex-wrap items-end gap-4 px-4 py-3">
               <label class="flex flex-col min-w-40 flex-1">
                 <p class="text-[#101518] text-base font-medium leading-normal pb-2">Diámetro (m)</p>
@@ -182,6 +206,7 @@
                 />
               </label>
             </div>
+            <!-- Campo de entrada para el costo volumétrico del aislamiento -->
             <div class="flex max-w-[280px] flex-wrap items-end gap-4 px-4 py-3">
               <label class="flex flex-col min-w-40 flex-1">
                 <p class="text-[#101518] text-base font-medium leading-normal pb-2">Costo volumetrico del Aislamiento ($/m³)</p>
@@ -194,6 +219,7 @@
                 />
               </label>
             </div>
+            <!-- Campo de entrada para la conductividad térmica del aislamiento -->
             <div class="flex max-w-[280px] flex-wrap items-end gap-4 px-4 py-3">
               <label class="flex flex-col min-w-40 flex-1">
                 <p class="text-[#101518] text-base font-medium leading-normal pb-2">Conductividad Térmica del Aislamiento (W/mK)</p>
@@ -205,6 +231,7 @@
                 />
               </label>
             </div>
+            <!-- Campo de entrada para el coeficiente de convección -->
             <div class="flex max-w-[280px] flex-wrap items-end gap-4 px-4 py-3">
               <label class="flex flex-col min-w-40 flex-1">
                 <p class="text-[#101518] text-base font-medium leading-normal pb-2">Coeficiente de Convección (W/m²K)</p>
@@ -217,6 +244,7 @@
                 />
               </label>
             </div>
+            <!-- Campo de entrada para las horas de funcionamiento -->
             <div class="flex max-w-[280px] flex-wrap items-end gap-4 px-4 py-3">
               <label class="flex flex-col min-w-40 flex-1">
                 <p class="text-[#101518] text-base font-medium leading-normal pb-2">Horas de Funcionamiento (horas/año)</p>
@@ -228,10 +256,13 @@
               </label>
             </div>
           </div>
+          <!-- Columna derecha: Título, resultados, parámetros guardados y gráfico -->
           <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+            <!-- Título de la calculadora -->
             <div class="flex flex-wrap justify-between gap-3 p-4">
               <p class="text-[#101518] tracking-light text-[32px] font-bold leading-tight min-w-72">Calculadora de Aislamiento Térmico</p>
             </div>
+            <!-- Botón de calcular y área de resultados -->
             <div class="flex justify-stretch">
               <div class="flex flex-1 gap-3 flex-wrap px-4 py-3 justify-start items-center">
                 <button
@@ -240,10 +271,13 @@
                 >
                   <span class="truncate">Calcular</span>
                 </button>
+                <!-- Contenedor para mostrar mensajes de resultado del cálculo -->
                 <div id="resultado" class="px-4 py-2 text-green-600 text-base font-semibold min-h-6"></div>
               </div>
             </div>
+            <!-- Sección para mostrar los resultados del cálculo -->
             <div class="flex flex-row flex-wrap gap-4 px-4 py-3 items-end w-full max-w-full">
+              <!-- Campo de resultado: Espesor óptimo -->
               <div class="flex-1 min-w-[120px] max-w-[300px]">
                 <label class="flex flex-col">
                   <p class="text-[#101518] text-base font-medium leading-normal pb-2">Espesor Óptimo del Aislamiento (m)</p>
@@ -255,6 +289,7 @@
                   />
                 </label>
               </div>
+              <!-- Campo de resultado: Espesor crítico -->
               <div class="flex-1 min-w-[120px] max-w-[300px]">
                 <label class="flex flex-col">
                   <p class="text-[#101518] text-base font-medium leading-normal pb-2">Espesor Crítico del Aislamiento (m)</p>
@@ -266,6 +301,7 @@
                   />
                 </label>
               </div>
+              <!-- Campo de resultado: Coeficiente de convección -->
               <div class="flex-1 min-w-[120px] max-w-[300px]">
                 <label class="flex flex-col">
                   <p class="text-[#101518] text-base font-medium leading-normal pb-2">Coeficiente de Convección (W/m²K)</p>
@@ -278,14 +314,17 @@
                 </label>
               </div>
             </div>
+            <!-- Sección de parámetros guardados -->
             <h3 class="text-[#101518] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Parámetros Guardados</h3>
             <div class="flex flex-col p-4">
+              <!-- Contenedor para mostrar los conjuntos de parámetros guardados -->
               <div id="parametrosGuardadosContainer" class="flex flex-col items-center gap-6 rounded-xl border-2 border-dashed border-[#d4dde2] px-6 py-14">
                 <div class="flex max-w-[480px] flex-col items-center gap-2">
                   <p class="text-[#101518] text-lg font-bold leading-tight tracking-[-0.015em] max-w-[480px] text-center">No hay parámetros guardados</p>
                   <p class="text-[#101518] text-sm font-normal leading-normal max-w-[480px] text-center">Guarda tus parámetros de cálculo para uso futuro.</p>
                 </div>
               </div>
+              <!-- Botón para guardar el conjunto de parámetros actual -->
               <button
                 id="btnGuardarParametros"
                 class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaeef1] text-[#101518] text-sm font-bold leading-normal tracking-[0.015em] mt-4 self-center"
@@ -293,8 +332,11 @@
                 <span class="truncate">Guardar Parámetros Actuales</span>
               </button>
             </div>
+            <!-- Sección del gráfico -->
             <h3 class="text-[#101518] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Gráfico</h3>
+            <!-- Controles para la generación del gráfico -->
             <div class="flex flex-wrap items-end gap-x-4 gap-y-2 px-4 py-3 w-full">
+              <!-- Selector de variable para el eje X del gráfico -->
               <label class="flex flex-col flex-1" style="min-width: 325px;">
                 <p class="text-[#101518] text-base font-medium leading-normal pb-2">Seleccionar Variable</p>
                 <select
@@ -315,25 +357,31 @@
                   <option value="eta">Eficiencia (%)</option>
                 </select>
               </label>
+              <!-- Campo de entrada para el valor mínimo del rango del gráfico -->
               <label class="flex items-center flex-1 gap-2" style="min-width: 100px; max-width: 150px;">
                 <span class="text-[#101518] text-sm font-medium leading-normal">Mínimo</span>
                 <input id="inp_grafica_min" type="number" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101518] focus:outline-0 focus:ring-0 border border-[#d4dde2] bg-gray-50 focus:border-[#d4dde2] h-10 placeholder:text-[#5c778a] p-2 text-sm font-normal leading-normal" />
               </label>
+              <!-- Campo de entrada para el valor máximo del rango del gráfico -->
               <label class="flex items-center flex-1 gap-2" style="min-width: 100px; max-width: 150px;">
                 <span class="text-[#101518] text-sm font-medium leading-normal">Máximo</span>
                 <input id="inp_grafica_max" type="number" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101518] focus:outline-0 focus:ring-0 border border-[#d4dde2] bg-gray-50 focus:border-[#d4dde2] h-10 placeholder:text-[#5c778a] p-2 text-sm font-normal leading-normal" />
               </label>
+              <!-- Campo de entrada para el paso del rango del gráfico -->
               <label class="flex items-center flex-1 gap-2" style="min-width: 100px; max-width: 150px;">
                 <span class="text-[#101518] text-sm font-medium leading-normal">Paso</span>
                 <input id="inp_grafica_paso" type="number" step="any" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101518] focus:outline-0 focus:ring-0 border border-[#d4dde2] bg-gray-50 focus:border-[#d4dde2] h-10 placeholder:text-[#5c778a] p-2 text-sm font-normal leading-normal" />
               </label>
             </div>
+            <!-- Botón para generar el gráfico y área de mensajes -->
             <div class="flex flex-wrap items-end gap-x-4 gap-y-2 px-4 py-3 w-full">
               <button id="graficar-btn" class="calcular-btn flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#b2d1e5] text-[#101518] text-sm font-bold leading-normal tracking-[0.015em] self-end">
                 Graficar
               </button>
+              <!-- Contenedor para mostrar mensajes de resultado de la graficación -->
               <div id="resultado_grafica" class="px-4 py-2 text-green-600 text-base font-semibold min-h-6"></div>
             </div>
+            <!-- Contenedor del canvas para el gráfico -->
             <div class="flex flex-col px-4 py-3">
               <canvas id="grafica_espesor" width="600" height="320"></canvas>
             </div>
@@ -342,9 +390,10 @@
       </div>
     </div>
 
-    <!-- Modal de Información -->
+    <!-- Modal de Información: Muestra detalles sobre el proyecto y enlace a GitHub -->
     <div id="info-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center hidden px-4">
       <div class="relative mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white">
+        <!-- Botón para cerrar el modal de información -->
         <button
           id="close-info-modal-btn"
           class="absolute top-0 right-0 mt-4 mr-4 text-gray-400 hover:text-gray-600 focus:outline-none"
@@ -369,6 +418,7 @@
             <p class="text-sm font-semibold text-gray-800 mb-6">
               UNIVERSIDAD NACIONAL EXPERIMENTAL POLITÉCNICA “ANTONIO JOSÉ DE SUCRE” VICE-RECTORADO BARQUISIMETO DEPARTAMENTO DE INGENIERÍA MECÁNICA
             </p>
+            <!-- Enlace al repositorio de GitHub -->
             <div class="flex flex-col items-center justify-center mb-6">
               <a href="https://github.com/Ben-Gonzalez-97/Calculadora_Espesores_Optimo_Economico" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center p-2 bg-gray-800 hover:bg-gray-700 text-white rounded-full focus:outline-none focus:ring-2 focus:ring-gray-500" aria-label="GitHub Repository">
                 <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -381,7 +431,7 @@
       </div>
     </div>
 
-    <!-- Modal para Ingresar Nombre de Catálogo -->
+    <!-- Modal para Ingresar Nombre de Catálogo: Permite al usuario guardar un conjunto de parámetros con un nombre. -->
     <div id="input-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center hidden px-4 z-50">
       <div class="relative mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white">
         <h3 id="input-modal-title" class="text-lg leading-6 font-medium text-gray-900 mb-4">Guardar Parámetros</h3>
@@ -390,6 +440,7 @@
           <input type="text" id="input-modal-field" class="form-input w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" />
           <p id="input-modal-error" class="text-red-500 text-xs mt-1 hidden">El nombre no puede estar vacío.</p>
         </div>
+        <!-- Botones de acción del modal de entrada -->
         <div class="mt-4 flex justify-end gap-2">
           <button id="input-modal-cancel-btn" class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">Cancelar</button>
           <button id="input-modal-save-btn" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Guardar</button>
@@ -397,7 +448,7 @@
       </div>
     </div>
 
-    <!-- Modal para Mensajes (Alertas) -->
+    <!-- Modal para Mensajes (Alertas): Muestra mensajes informativos o de error al usuario. -->
     <div id="message-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center hidden px-4 z-50">
       <div class="relative mx-auto p-5 border w-full max-w-sm shadow-lg rounded-md bg-white">
         <div class="mt-3 text-center">
@@ -405,6 +456,7 @@
           <div class="mt-2 px-7 py-3">
             <p id="message-modal-text" class="text-sm text-gray-700"></p>
           </div>
+          <!-- Botón de acción del modal de mensaje -->
           <div class="items-center px-4 py-3">
             <button id="message-modal-ok-btn" class="px-4 py-2 bg-blue-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
               Aceptar
@@ -414,13 +466,14 @@
       </div>
     </div>
 
-    <!-- Modal para Confirmación (Eliminar) -->
+    <!-- Modal para Confirmación (Eliminar): Pide confirmación al usuario antes de realizar una acción destructiva. -->
     <div id="confirmation-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center hidden px-4 z-50">
       <div class="relative mx-auto p-5 border w-full max-w-sm shadow-lg rounded-md bg-white">
         <h3 id="confirmation-modal-title" class="text-lg leading-6 font-medium text-gray-900 mb-4">Confirmar Acción</h3>
         <div class="mt-2">
           <p id="confirmation-modal-text" class="text-sm text-gray-700"></p>
         </div>
+        <!-- Botones de acción del modal de confirmación -->
         <div class="mt-4 flex justify-end gap-2">
           <button id="confirmation-modal-cancel-btn" class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">Cancelar</button>
           <button id="confirmation-modal-confirm-btn" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">Confirmar</button>
@@ -428,15 +481,16 @@
       </div>
     </div>
 
+    <!-- Enlace a la librería Chart.js para gráficos -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- <script src="/app.js"></script> --> <!-- Original app.js, comentado según solicitud -->
+    <!-- <script src="/app.js"></script> --> <!-- Script original, ahora modularizado -->
 
-    <!-- Nuevos scripts modularizados -->
-    <script src="/apiService.js"></script>
-    <script src="/modalHandler.js"></script> <!-- Movido antes de catalogManager -->
-    <script src="/catalogManager.js"></script> <!-- Define valoresBase, leyendas, etc. -->
-    <script src="/calculationHandler.js"></script>
-    <script src="/graphHandler.js"></script>
-    <script src="/uiSetup.js"></script> <!-- Debe ser el último para inicializar todo -->
+    <!-- Scripts JavaScript modularizados de la aplicación -->
+    <script src="/apiService.js"></script> <!-- Manejo de la comunicación con la API -->
+    <script src="/modalHandler.js"></script> <!-- Manejo de todos los modales -->
+    <script src="/catalogManager.js"></script> <!-- Manejo del catálogo de parámetros guardados -->
+    <script src="/calculationHandler.js"></script> <!-- Manejo de la lógica de cálculo -->
+    <script src="/graphHandler.js"></script> <!-- Manejo de la generación de gráficos -->
+    <script src="/uiSetup.js"></script> <!-- Configuración inicial de la interfaz de usuario y eventos -->
   </body>
 </html>

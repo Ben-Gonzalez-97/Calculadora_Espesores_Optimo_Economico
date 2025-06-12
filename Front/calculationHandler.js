@@ -1,7 +1,20 @@
-// Este módulo maneja la lógica del botón "Calcular" y el cálculo óptimo.
+/**
+ * @file calculationHandler.js
+ * @summary Maneja la lógica de cálculo principal de la aplicación, incluyendo la validación de entradas,
+ * la comunicación con el backend para resolver ecuaciones y la actualización de la interfaz de usuario
+ * con los resultados (espesor óptimo, radio crítico, coeficiente de convección y mensajes de estado).
+ */
 
 // Asegúrate de que API_BASE esté disponible, por ejemplo, cargando apiService.js antes.
 
+/**
+ * Inicializa los manejadores de eventos para el proceso de cálculo.
+ *
+ * Configura el listener para el botón "Calcular". Al hacer clic, recopila los valores del formulario,
+ * realiza validaciones, envía la solicitud de cálculo al backend y muestra los resultados
+ * o errores en la interfaz de usuario.
+ * @returns {void}
+ */
 function initCalculationHandler() {
     const calcularBtn = document.getElementById('calcular-btn');
     const resultadoEspesor = document.getElementById('resultado_espesor');
@@ -10,13 +23,18 @@ function initCalculationHandler() {
     const resultadoH = document.getElementById('resultado_h'); 
 
     if (!calcularBtn || !resultadoEspesor || !resultadoRadioCritico || !resultadoMensaje || !resultadoH) {
-        console.error("Alguno de los elementos de UI para el cálculo no fue encontrado.");
+        console.error("Alguno de los elementos de UI para el cálculo no fue encontrado. La funcionalidad de cálculo no estará disponible.");
         return;
     }
 
     const originalButtonText = calcularBtn.textContent;
 
-    // Función para manejar errores de validación, movida fuera del event listener
+    /**
+     * Maneja y muestra un mensaje de error de validación en la interfaz de usuario.
+     * Actualiza el estado visual del botón de cálculo para reflejar el error.
+     * @param {string} message - El mensaje de error a mostrar.
+     * @returns {void}
+     */
     function handleValidationError(message) {
         resultadoMensaje.textContent = message;
         resultadoMensaje.classList.remove('text-green-600'); // Asegurar que no haya clases de éxito
@@ -27,7 +45,11 @@ function initCalculationHandler() {
         calcularBtn.classList.add('bg-red-500', 'hover:bg-red-700');
     }
 
-    // Función para obtener los valores del formulario
+    /**
+     * Recopila todos los valores actuales de los campos de entrada del formulario.
+     * Convierte los valores numéricos y maneja la conversión de la eficiencia (eta) a decimal.
+     * @returns {object} Un objeto que contiene todos los valores del formulario, listos para ser procesados o enviados.
+     */
     function getFormValues() {
         return {
             vida_util: Number(document.getElementById('inp_vida_util').value),
@@ -59,7 +81,7 @@ function initCalculationHandler() {
         resultadoRadioCritico.value = '-';
         resultadoMensaje.textContent = '';
         resultadoMensaje.className = 'px-4 py-2 text-base font-semibold min-h-6'; // Resetear clases de mensaje
-        if(resultadoH) resultadoH.value = '-';
+        if(resultadoH) resultadoH.value = '-' ;
 
         const formValues = getFormValues();
         const {
