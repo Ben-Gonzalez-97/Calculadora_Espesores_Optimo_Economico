@@ -154,8 +154,8 @@ function initGraphHandler() {
         const step_val = parseFloat(inpGraficaPaso.value);
 
         // Validaciones de rango
-        if (isNaN(min_val) || isNaN(max_val) || isNaN(step_val) || step_val <= 0) {
-            resultadoGrafica.textContent = 'Los valores de rango (Mín, Máx, Paso) deben ser números válidos y el paso mayor a cero.';
+        if (isNaN(min_val) || isNaN(max_val) || isNaN(step_val) || step_val <= 0 || min_val <= 0) {
+            resultadoGrafica.textContent = 'Los valores de rango (Mín, Máx, Paso) deben ser números válidos. El Mín y el Paso deben ser mayores a cero.';
             resultadoGrafica.classList.add('text-red-600');
             graficarBtn.disabled = false;
             graficarBtn.textContent = originalGraphButtonText;
@@ -165,6 +165,15 @@ function initGraphHandler() {
         }
         if (min_val >= max_val) {
             resultadoGrafica.textContent = 'El valor Mín debe ser menor que el valor Máx para el rango.';
+            resultadoGrafica.classList.add('text-red-600');
+            graficarBtn.disabled = false;
+            graficarBtn.textContent = originalGraphButtonText;
+            graficarBtn.classList.remove('bg-yellow-500', 'hover:bg-yellow-700');
+            graficarBtn.classList.add('bg-red-500', 'hover:bg-red-700');
+            return;
+        }
+        if ((max_val - min_val) / step_val > 100) {
+            resultadoGrafica.textContent = 'La combinación de Mín, Máx y Paso resulta en demasiadas iteraciones (máximo 100). Ajusta los valores.';
             resultadoGrafica.classList.add('text-red-600');
             graficarBtn.disabled = false;
             graficarBtn.textContent = originalGraphButtonText;
