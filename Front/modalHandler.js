@@ -2,6 +2,7 @@
  * @file modalHandler.js
  * @summary Gestiona la inicialización y la lógica de todos los modales de la aplicación.
  * Incluye modales de información, de entrada de datos, de mensajes y de confirmación.
+ * @module modalHandler
  */
 
 // Variables para los modales (obtenidas una vez al inicio)
@@ -47,9 +48,21 @@ let infoModal,
     /** @type {HTMLButtonElement} */
     infoModalBtn;
 
+/** @type {HTMLElement} */
+let exportModal,
+    /** @type {HTMLButtonElement} */
+    closeExportModalBtn,
+    /** @type {HTMLButtonElement} */
+    exportJsonBtn,
+    /** @type {HTMLButtonElement} */
+    exportCsvBtn;
+
 /**
- * Inicializa todos los manejadores de modales obteniendo las referencias a los elementos del DOM
- * y configurando los listeners de eventos iniciales para el modal de información.
+ * Inicializa todos los manejadores de modales obteniendo las referencias a los elementos del DOM.
+ * Configura listeners de eventos iniciales para el modal de información (apertura/cierre)
+ * y para el cierre genérico de modales al hacer clic fuera de ellos o presionar Escape (cuando corresponda).
+ * Los listeners específicos para acciones dentro de los modales (guardar, confirmar, etc.)
+ * se configuran dinámicamente cuando se muestra cada modal.
  * Advierte en la consola si no se encuentran elementos críticos para algún modal.
  */
 function initModalHandler() {
@@ -109,6 +122,30 @@ function initModalHandler() {
     if (!confirmationModal || !confirmationModalConfirmBtn || !confirmationModalCancelBtn) {
         console.warn('Elementos del modal de confirmación no encontrados.');
     }
+
+    // Modal de Exportación
+    exportModal = document.getElementById('export-modal');
+    closeExportModalBtn = document.getElementById('close-export-modal-btn');
+    exportJsonBtn = document.getElementById('export-json-btn');
+    exportCsvBtn = document.getElementById('export-csv-btn');
+
+    if (!exportModal || !closeExportModalBtn || !exportJsonBtn || !exportCsvBtn ) {
+        console.warn('Elementos del modal de exportación no encontrados o incompletos.');
+    } else {
+        // El botón closeExportModalBtn ahora también actúa como cancelación para la promesa en showExportModal.
+        // Su listener para simplemente ocultar el modal se maneja en showExportModal para coordinar con la promesa.
+
+        // NO AÑADIR listeners para exportJsonBtn y exportCsvBtn aquí.
+        // showExportModal se encargará de sus listeners cuando el modal esté activo.
+
+        window.addEventListener('click', (event) => {
+            if (event.target === exportModal) {
+                exportModal.classList.add('hidden');
+                // Si se cierra haciendo clic fuera, la promesa en showExportModal debe manejarse (generalmente como cancelación)
+                // Esto se maneja con el MutationObserver dentro de showExportModal
+            }
+        });
+    }
 }
 
 // --- Funciones para Modales Personalizados (movidas desde catalogManager.js) ---
@@ -120,7 +157,7 @@ function initModalHandler() {
  * @param {string} [title="Guardar Catálogo"] - El título del modal.
  * @returns {Promise<string|null>} Una promesa que se resuelve con el valor ingresado por el usuario
  *                                  o `null` si el usuario cancela la entrada.
- *                                  Rechaza si los elementos del modal no están inicializados.
+ *                                  La promesa se rechaza si los elementos del modal no están disponibles.
  */
 function showInputModal(promptText, defaultValue, title = "Guardar Catálogo") {
     if (!inputModal || !inputModalTitle || !inputModalPrompt || !inputModalField || !inputModalError || !inputModalSaveBtn || !inputModalCancelBtn) {
@@ -182,7 +219,7 @@ function showInputModal(promptText, defaultValue, title = "Guardar Catálogo") {
  * @param {string} message - El mensaje a mostrar.
  * @param {string} [title="Mensaje"] - El título del modal.
  * @returns {Promise<boolean>} Una promesa que se resuelve a `true` cuando el usuario cierra el modal.
- *                             Rechaza si los elementos del modal no están inicializados.
+ *                             La promesa se rechaza si los elementos del modal no están disponibles.
  */
 function showMessageModal(message, title = "Mensaje") {
     if (!messageModal || !messageModalTitle || !messageModalText || !messageModalOkBtn) {
@@ -228,7 +265,7 @@ function showMessageModal(message, title = "Mensaje") {
  * @param {string} [title="Confirmar Acción"] - El título del modal.
  * @returns {Promise<boolean>} Una promesa que se resuelve a `true` si el usuario confirma,
  *                             o `false` si cancela.
- *                             Rechaza si los elementos del modal no están inicializados.
+ *                             La promesa se rechaza si los elementos del modal no están disponibles.
  */
 function showConfirmationModal(message, title = "Confirmar Acción") {
     if (!confirmationModal || !confirmationModalTitle || !confirmationModalText || !confirmationModalConfirmBtn || !confirmationModalCancelBtn) {
@@ -276,3 +313,86 @@ function showConfirmationModal(message, title = "Confirmar Acción") {
     });
 }
 // --- FIN FUNCIONES PARA MODALES PERSONALIZADOS ---
+
+/**
+ * Muestra el modal de exportación.
+ * @returns {Promise<string|null>} Una promesa que se resuelve con el formato de exportación seleccionado (ej. "JSON", "CSV")
+ *                                  o `null` si el usuario cancela o cierra el modal.
+ *                                  La promesa se rechaza si los elementos del modal no están disponibles.
+ */
+function showExportModal() {
+    if (!exportModal || !exportJsonBtn || !exportCsvBtn || !closeExportModalBtn) { // Chequeo actualizado
+        console.error("Modal de exportación no inicializado correctamente.");
+        return Promise.reject("Modal de exportación no disponible");
+    }
+    exportModal.classList.remove('hidden');
+    // Asegurarse de que el primer botón de opción sea enfocable si se desea, o el modal en sí.
+    if (exportJsonBtn) {
+        exportJsonBtn.focus();
+    }
+
+
+    return new Promise((resolve) => {
+        let promiseResolved = false; // Bandera para evitar múltiples resoluciones
+
+        const handleExportOptionClick = (event) => {
+            if (promiseResolved) return;
+            promiseResolved = true;
+
+            const format = event.target.id.split('-')[1]?.toUpperCase();
+            if (format) {
+                cleanExportModalListeners();
+                exportModal.classList.add('hidden'); 
+                resolve(format);
+            } else {
+                // Caso improbable si el id del botón no es el esperado
+                cleanExportModalListeners();
+                exportModal.classList.add('hidden');
+                resolve(null);
+            }
+        };
+
+        const handleCancelClick = () => { 
+            if (promiseResolved) return;
+            promiseResolved = true;
+
+            cleanExportModalListeners();
+            exportModal.classList.add('hidden'); 
+            resolve(null);
+        };
+        
+        const escapeListener = (event) => {
+            if (event.key === 'Escape') {
+                // Simula clic en el botón "X" (closeExportModalBtn)
+                // No llamar a closeExportModalBtn.click() directamente si ya tiene un listener {once: true}
+                // y queremos que esta lógica de escape también sea {once: true} en efecto.
+                // En su lugar, invocar la acción de cancelación directamente.
+                handleCancelClick();
+            }
+        };
+
+        const cleanExportModalListeners = () => {
+            exportJsonBtn.removeEventListener('click', handleExportOptionClick);
+            exportCsvBtn.removeEventListener('click', handleExportOptionClick);
+            closeExportModalBtn.removeEventListener('click', handleCancelClick);
+            document.removeEventListener('keydown', escapeListener);
+            if (observer) observer.disconnect(); 
+        };
+        
+        exportJsonBtn.addEventListener('click', handleExportOptionClick, { once: true });
+        exportCsvBtn.addEventListener('click', handleExportOptionClick, { once: true });
+        closeExportModalBtn.addEventListener('click', handleCancelClick, { once: true }); 
+        document.addEventListener('keydown', escapeListener, { once: true });
+
+        const observer = new MutationObserver(() => {
+            if (exportModal.classList.contains('hidden') && !promiseResolved) {
+                // Si el modal se ocultó (ej. clic fuera) y la promesa no fue resuelta por un botón,
+                // se considera una cancelación.
+                promiseResolved = true;
+                cleanExportModalListeners(); 
+                resolve(null); 
+            }
+        });
+        observer.observe(exportModal, { attributes: true, attributeFilter: ['class'] });
+    });
+}

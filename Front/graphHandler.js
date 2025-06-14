@@ -86,13 +86,14 @@ function initGraphHandler() {
     const resultadoGrafica = document.getElementById('resultado_grafica'); 
     const graficaSecundariaControls = document.getElementById('grafica_secundaria_controls');
     const selectVisualizacionSecundaria = document.getElementById('select_visualizacion_secundaria');
+    const exportGraphDataBtn = document.getElementById('export-graph-data-btn'); // Nuevo botón
 
     const inpGraficaMin = document.getElementById('inp_grafica_min');
     const inpGraficaMax = document.getElementById('inp_grafica_max');
     const inpGraficaPaso = document.getElementById('inp_grafica_paso');
 
-    if (!graficarBtn || !selectVariableGrafica || !canvasGrafica || !resultadoGrafica || !inpGraficaMin || !inpGraficaMax || !inpGraficaPaso || !graficaSecundariaControls || !selectVisualizacionSecundaria) {
-        console.error("Elementos del DOM para la gráfica o controles secundarios no encontrados. La funcionalidad de graficación no estará disponible completamente.");
+    if (!graficarBtn || !selectVariableGrafica || !canvasGrafica || !resultadoGrafica || !inpGraficaMin || !inpGraficaMax || !inpGraficaPaso || !graficaSecundariaControls || !selectVisualizacionSecundaria || !exportGraphDataBtn) {
+        console.error("Elementos del DOM para la gráfica, controles secundarios o botón de exportación no encontrados. La funcionalidad de graficación no estará disponible completamente.");
         return;
     }
 
@@ -137,6 +138,7 @@ function initGraphHandler() {
         resultadoGrafica.textContent = ''; 
         resultadoGrafica.className = 'px-4 py-2 text-base font-semibold min-h-6'; // Resetear clases de mensaje
         graficaSecundariaControls.classList.add('hidden'); // Ocultar al inicio de la graficación
+        // exportGraphDataBtn está dentro de graficaSecundariaControls, por lo que se oculta también.
         currentGraphData = null; // Resetear datos de gráfica anterior
 
         const variableSeleccionada = selectVariableGrafica.value;
@@ -214,8 +216,8 @@ function initGraphHandler() {
         const step_val = parseFloat(inpGraficaPaso.value);
 
         // Validaciones de rango
-        if (isNaN(min_val) || isNaN(max_val) || isNaN(step_val) || step_val <= 0) {
-            resultadoGrafica.textContent = 'Los valores de rango (Mín, Máx, Paso) deben ser números válidos y el paso mayor a cero.';
+        if (isNaN(min_val) || isNaN(max_val) || isNaN(step_val) || step_val <= 0 || min_val < 0 || max_val < 0) {
+            resultadoGrafica.textContent = 'Los valores de rango (Mín, Máx, Paso) deben ser números válidos y mayor a cero.';
             resultadoGrafica.classList.add('text-red-600');
             graficarBtn.disabled = false;
             graficarBtn.textContent = originalGraphButtonText;
@@ -415,6 +417,7 @@ function initGraphHandler() {
                         }
                     }
                     graficaSecundariaControls.classList.remove('hidden');
+                    // exportGraphDataBtn está dentro de graficaSecundariaControls, por lo que se muestra también.
                 } else {
                     graficaSecundariaControls.classList.add('hidden');
                 }
@@ -613,5 +616,42 @@ function initGraphHandler() {
         }
         
         chartEspesor.update();
+    });
+
+    exportGraphDataBtn.addEventListener('click', async () => {
+        if (!currentGraphData || !currentGraphData.x || !currentGraphData.y) {
+            showMessageModal("No hay datos de gráfica para exportar. Por favor, genera una gráfica primero.", "Error de Exportación");
+            return;
+        }
+
+        try {
+            const selectedFormat = await showExportModal();
+            if (selectedFormat) {
+                const variableSeleccionada = document.getElementById('select_variable_grafica').value;
+                const variableLabel = leyendas[variableSeleccionada] || variableSeleccionada;
+
+                // Asegurarse de que las constantes de precisión están definidas y son números
+                const pEspesor = typeof PRECISION_ESPESOR === 'number' ? PRECISION_ESPESOR : 4;
+                const pH = typeof PRECISION_H === 'number' ? PRECISION_H : 4;
+                const pRc = typeof PRECISION_RC === 'number' ? PRECISION_RC : 4;
+
+                if (selectedFormat === 'JSON') {
+                    exportDataAsJson(currentGraphData, variableSeleccionada, variableLabel, pEspesor, pH, pRc);
+                    // showMessageModal se llama ahora desde exportService si no hay datos, 
+                    // o se podría llamar aquí para éxito si se prefiere.
+                    // Por ahora, la notificación de éxito se puede omitir si la descarga funciona.
+                } else if (selectedFormat === 'CSV') {
+                    exportDataAsCsv(currentGraphData, variableSeleccionada, variableLabel, pEspesor, pH, pRc);
+                } else {
+                    console.log(`Formato de exportación ${selectedFormat} no implementado.`);
+                    showMessageModal(`Formato de exportación ${selectedFormat} aún no implementado.`, "Información");
+                }
+            } else {
+                console.log("Exportación cancelada por el usuario.");
+            }
+        } catch (error) {
+            console.error("Error durante el proceso de exportación:", error);
+            showMessageModal("Ocurrió un error durante la exportación.", "Error de Exportación");
+        }
     });
 }
