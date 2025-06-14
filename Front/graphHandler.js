@@ -2,7 +2,6 @@
  * @file Maneja la lógica de inicialización y actualización de la gráfica de espesor.
  * @summary Este módulo se encarga de la interacción del usuario con los controles de la gráfica,
  * la obtención de datos del backend y la representación visual usando Chart.js.
- * @module graphHandler 
  */
 
 // Constantes para configuración de la gráfica
@@ -21,11 +20,8 @@ const PRECISION_RC = 4;      // Para el espesor crítico
  */
 let chartEspesor = null;
 /**
- * Almacena los datos de la última gráfica generada obtenidos de la API y procesados localmente.
- * Incluye los valores del eje X (`x`), los valores del eje Y principal (espesor, `y`),
- * y opcionalmente los valores calculados para el coeficiente de convección (`h_vals`)
- * y el espesor/radio crítico (`rc_vals`).
- * @type {{x: number[], y: number[], h_vals?: (number | null)[], rc_vals?: (number | null)[], error?: string} | null}
+ * Almacena los datos de la última gráfica generada, incluyendo x, y, h_vals y rc_vals.
+ * @type {object | null}
  */
 let currentGraphData = null;
 
@@ -81,7 +77,6 @@ const defaultGraphRanges = {
  * Configura los listeners para:
  * - El cambio en el selector de variable para la gráfica (actualiza los campos de rango).
  * - El clic en el botón "Graficar" (recopila datos, llama a la API y renderiza la gráfica).
- * - El cambio en el selector de visualización secundaria (actualiza la gráfica para mostrar 'h' o 'rc').
  * @returns {void}
  */
 function initGraphHandler() {
