@@ -385,6 +385,19 @@
             <div class="flex flex-col px-4 py-3">
               <canvas id="grafica_espesor" width="600" height="320"></canvas>
             </div>
+            <!-- Nueva sección para el select de tipo de gráfica secundaria -->
+            <div id="grafica_secundaria_controls" class="flex flex-col px-4 py-3 hidden">
+              <label class="flex flex-col flex-1" style="min-width: 325px;">
+                <p class="text-[#101518] text-base font-medium leading-normal pb-2">Seleccionar Visualización Secundaria</p>
+                <select
+                  id="select_visualizacion_secundaria"
+                  class="form-input flex w-full max-w-[325px] flex-1 resize-none overflow-hidden rounded-xl text-[#101518] focus:outline-0 focus:ring-0 border border-[#d4dde2] bg-gray-50 focus:border-[#d4dde2] h-14 bg-[image:--select-button-svg] placeholder:text-[#5c778a] p-[7px] text-base font-normal leading-normal"
+                >
+                  <option value="h_calculado">Coeficiente de convección</option>
+                  <option value="radio_critico">Espesor crítico</option>
+                </select>
+              </label>
+            </div>
           </div>
         </div>
       </div>
