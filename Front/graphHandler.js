@@ -6,7 +6,7 @@
 
 /**
  * Instancia del gráfico Chart.js para mostrar el espesor.
- * @type {Chart | null}
+ * @type {import('chart.js').Chart | null}
  */
 let chartEspesor = null;
 
@@ -18,7 +18,7 @@ let chartEspesor = null;
  * @type {Object<string, [number, number, number]>}
  */
 const defaultGraphRanges = {
-    'Ta': [10, 50, 1],    
+    'Ta': [10, 45, 1],    
     'Te': [10, 100, 5],   
     'Ti': [20, 300, 5],   
     'v': [0.1, 10, 0.2],  
@@ -26,7 +26,7 @@ const defaultGraphRanges = {
     'diametro': [0.01, 1, 0.02], 
     'C': [100, 10000, 200], 
     'w': [0.01, 0.2, 0.005],  
-    'beta': [0, 8760, 24],   
+    'beta': [0, 8760, 96],   
     'vida_util': [1, 30, 1], 
     'eta': [10, 100, 5]     
 };
@@ -56,6 +56,11 @@ function initGraphHandler() {
 
     const originalGraphButtonText = graficarBtn.textContent; // Guardar texto original
 
+    /**
+     * Manejador para el evento 'change' del selector de variable de la gráfica.
+     * Actualiza los campos de mínimo, máximo y paso según la variable seleccionada.
+     * @param {Event} event - El objeto del evento 'change'.
+     */
     selectVariableGrafica.addEventListener('change', (event) => {
         const selectedVar = event.target.value;
         if (defaultGraphRanges[selectedVar]) {
@@ -75,7 +80,12 @@ function initGraphHandler() {
         selectVariableGrafica.dispatchEvent(new Event('change'));
     }
 
-
+    /**
+     * Manejador de eventos para el clic en el botón 'Graficar'.
+     * Recopila los datos de entrada, realiza una solicitud a la API para obtener los datos de la gráfica
+     * y luego renderiza la gráfica utilizando Chart.js.
+     * @async
+     */
     graficarBtn.addEventListener('click', async () => {
         // Estado inicial del botón y mensajes
         graficarBtn.disabled = true;
@@ -124,6 +134,10 @@ function initGraphHandler() {
             return;
         }
 
+        /**
+         * Objeto que contiene los valores conocidos para el cálculo de la gráfica.
+         * @type {object}
+         */
         const known_values = {
             vida_util,
             w: w_val,
@@ -154,8 +168,8 @@ function initGraphHandler() {
         const step_val = parseFloat(inpGraficaPaso.value);
 
         // Validaciones de rango
-        if (isNaN(min_val) || isNaN(max_val) || isNaN(step_val) || step_val <= 0 || min_val <= 0) {
-            resultadoGrafica.textContent = 'Los valores de rango (Mín, Máx, Paso) deben ser números válidos. El Mín y el Paso deben ser mayores a cero.';
+        if (isNaN(min_val) || isNaN(max_val) || isNaN(step_val) || step_val <= 0) {
+            resultadoGrafica.textContent = 'Los valores de rango (Mín, Máx, Paso) deben ser números válidos y el paso mayor a cero.';
             resultadoGrafica.classList.add('text-red-600');
             graficarBtn.disabled = false;
             graficarBtn.textContent = originalGraphButtonText;
@@ -172,17 +186,12 @@ function initGraphHandler() {
             graficarBtn.classList.add('bg-red-500', 'hover:bg-red-700');
             return;
         }
-        if ((max_val - min_val) / step_val > 100) {
-            resultadoGrafica.textContent = 'La combinación de Mín, Máx y Paso resulta en demasiadas iteraciones (máximo 100). Ajusta los valores.';
-            resultadoGrafica.classList.add('text-red-600');
-            graficarBtn.disabled = false;
-            graficarBtn.textContent = originalGraphButtonText;
-            graficarBtn.classList.remove('bg-yellow-500', 'hover:bg-yellow-700');
-            graficarBtn.classList.add('bg-red-500', 'hover:bg-red-700');
-            return;
-        }
 
         try {
+            /**
+             * Respuesta de la API para la solicitud de datos de la gráfica.
+             * @type {Response}
+             */
             const response = await fetch(`${API_BASE}plot_espesor`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -199,10 +208,17 @@ function initGraphHandler() {
             });
 
             if (!response.ok) {
+                /**
+                 * Datos del error en formato JSON si la respuesta no es OK.
+                 * @type {{error: string}}
+                 */
                 const errorData = await response.json().catch(() => ({ error: 'Error desconocido del servidor al graficar.' }));
                 throw new Error(errorData.error || `Error ${response.status}`);
             }
-
+            /**
+             * Datos de la gráfica obtenidos de la API.
+             * @type {{x: number[], y: number[], h_vals?: number[], error?: string}}
+             */
             const data = await response.json();
 
             if (data.error) {
@@ -214,6 +230,10 @@ function initGraphHandler() {
                 if (chartEspesor) {
                     chartEspesor.destroy(); 
                 }
+                /**
+                 * Conjuntos de datos para la gráfica Chart.js.
+                 * @type {import('chart.js').ChartDataset<'line'>[]}
+                 */
                 const datasets = [
                     {
                         label: `Espesor (m) vs ${leyendas[variableSeleccionada] || variableSeleccionada}`,
@@ -238,6 +258,10 @@ function initGraphHandler() {
                     });
                 }
                 
+                /**
+                 * Configuración para los ejes Y de la gráfica.
+                 * @type {object}
+                 */
                 const yAxesConfig = {
                     y: {
                         type: 'linear',
@@ -248,6 +272,11 @@ function initGraphHandler() {
                             text: 'Espesor (m)'
                         },
                         ticks: {
+                            /**
+                             * Formatea los ticks del eje Y para mostrar un número fijo de decimales.
+                             * @param {number} value - El valor del tick.
+                             * @returns {string} El valor formateado.
+                             */
                             callback: function(value) {
                                 return Number(value).toFixed(3); // Ajustar precisión si es necesario
                             }
@@ -268,6 +297,11 @@ function initGraphHandler() {
                             drawOnChartArea: false, 
                         },
                         ticks: {
+                            /**
+                             * Formatea los ticks del eje Y1 para mostrar un número fijo de decimales.
+                             * @param {number} value - El valor del tick.
+                             * @returns {string} El valor formateado.
+                             */
                             callback: function(value) {
                                 return Number(value).toFixed(2); // Ajustar precisión si es necesario
                             }
@@ -302,7 +336,16 @@ function initGraphHandler() {
                                 text: `Gráfica de Espesor vs ${leyendas[variableSeleccionada] || variableSeleccionada}` 
                             },
                             tooltip: {
+                                /**
+                                 * Callbacks para personalizar el tooltip de la gráfica.
+                                 * @type {object}
+                                 */
                                 callbacks: {
+                                    /**
+                                     * Formatea la etiqueta del tooltip.
+                                     * @param {import('chart.js').TooltipItem<'line'>} context - Contexto del tooltip.
+                                     * @returns {string} La etiqueta formateada.
+                                     */
                                     label: function(context) {
                                         let label = context.dataset.label || '';
                                         if (label) {
