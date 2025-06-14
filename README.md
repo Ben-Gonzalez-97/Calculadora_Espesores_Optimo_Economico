@@ -35,6 +35,7 @@ Calculadora_Espesores_Optimo_Economico/
 │   ├── catalogManager.js
 │   ├── graphHandler.js
 │   ├── modalHandler.js
+│   ├── exportSevice.js
 │   └── uiSetup.js
 ├── requirements.txt
 ├── pyIntaller.bat
@@ -114,9 +115,13 @@ APP_PORT=5000
 ```
 
 ## Uso de la API
-La API principal está en `/solve_equation` (POST):
 
-### Ejemplo de request
+La API proporciona varios endpoints para interactuar con el motor de cálculo y obtener información relevante.
+
+### `POST /solve_equation`
+Este es el endpoint principal para resolver una ecuación y obtener el valor de una variable desconocida, como el espesor óptimo económico.
+
+**Ejemplo de request:**
 ```json
 POST /solve_equation
 Content-Type: application/json
@@ -139,7 +144,7 @@ Content-Type: application/json
 }
 ```
 
-### Ejemplo de respuesta
+**Ejemplo de respuesta:**
 ```json
 {
   "result": 0.032,
@@ -147,16 +152,18 @@ Content-Type: application/json
 }
 ```
 
-- `equation_key`: Identificador de la ecuación a usar.
-- `known_values`: Diccionario de variables conocidas.
-- `variable_to_solve`: Variable a despejar (ej: `e` para espesor).
-- `flow_type` y `orientation`: Opcionales, para cálculo automático de coeficiente de convección.
+**Parámetros del cuerpo (JSON):**
+- `equation_key` (string): Identificador de la ecuación a usar (ej: "optimo_economico_tuberia").
+- `known_values` (object): Diccionario de variables conocidas con sus valores.
+- `variable_to_solve` (string): Variable que se desea despejar (ej: `e` para espesor).
+- `flow_type` (string, opcional): Tipo de flujo ("interno" o "externo"). Necesario si se requiere el cálculo automático del coeficiente de convección `h`.
+- `orientation` (string, opcional): Orientación de la superficie ("horizontal", "vertical", "inclinada"). Necesario para algunos cálculos de `h`.
 
-### GET /equation_info/<equation_key>
-Recupera la información de una ecuación específica, incluyendo su formato LaTeX y restricciones.
+### `GET /equation_info/{equation_key}`
+Recupera la información detallada de una ecuación específica, incluyendo su representación en formato LaTeX y las restricciones aplicables.
 
 **Parámetros de URL:**
-- `equation_key` (string, path): El identificador de la ecuación (ej: "optimo_economico_tuberia").
+- `equation_key` (string, path): El identificador único de la ecuación (ej: "optimo_economico_tuberia").
 
 **Ejemplo de request:**
 ```http
@@ -180,10 +187,10 @@ GET /equation_info/optimo_economico_tuberia
 }
 ```
 - `latex`: La ecuación en formato LaTeX.
-- `restricciones`: Una lista de restricciones o condiciones para la ecuación.
+- `restricciones`: Una lista de cadenas que describen las restricciones o condiciones para la validez de la ecuación.
 
-### GET /variables_leyenda
-Obtiene un diccionario con la leyenda de las variables utilizadas en las ecuaciones, describiendo qué representa cada símbolo.
+### `GET /variables_leyenda`
+Obtiene un diccionario que sirve como leyenda para todas las variables utilizadas en las ecuaciones. Cada clave es el símbolo de la variable y su valor es una descripción de lo que representa.
 
 **Ejemplo de request:**
 ```http
@@ -210,8 +217,8 @@ GET /variables_leyenda
 }
 ```
 
-### POST /plot_espesor
-Genera datos para graficar cómo varía el espesor óptimo (u otra variable principal) en función de otra variable seleccionada, dentro de un rango especificado.
+### `POST /plot_espesor`
+Genera los datos necesarios para graficar cómo varía una variable objetivo (generalmente el espesor óptimo `e`) en función de otra variable seleccionada, dentro de un rango y con un paso definidos por el usuario.
 
 **Ejemplo de request:**
 ```json
@@ -248,9 +255,9 @@ Content-Type: application/json
   "h_vals": [10.5, 10.8, 11.1, 11.3, /* ... */, 14.5] // Valores de 'h' calculados para cada punto si aplica
 }
 ```
-- `x`: Lista de valores para la variable del eje X.
-- `y`: Lista de valores calculados para el espesor óptimo (o la variable principal) correspondientes a cada valor de `x`.
-- `h_vals`: Lista de valores del coeficiente de convección `h` calculados para cada punto, si `h` no se proporcionó y la ecuación lo requiere.
+- `x`: Lista de valores para la variable independiente (eje X del gráfico).
+- `y`: Lista de valores calculados para la variable dependiente (generalmente el espesor `e`, eje Y del gráfico), correspondientes a cada valor de `x`.
+- `h_vals`: Lista de valores del coeficiente de convección `h` calculados para cada punto, si `h` no se proporcionó como valor conocido y la ecuación lo requiere para el cálculo.
 
 ## Empaquetado con PyInstaller
 Puedes generar un ejecutable standalone ejecutando el script `pyIntaller.bat` que se encuentra en la raíz del proyecto.
@@ -269,9 +276,10 @@ Consulta el contenido del archivo `pyIntaller.bat` para ver los detalles especí
 
 ## Licencia
 Este proyecto está bajo la Licencia MIT. Ver [LICENSE](LICENSE).
- 
-¿Dudas o sugerencias? Abre un issue o contacta por GitHub.
 
+## Contacto
+¿Dudas o sugerencias? Abre un issue en el repositorio del proyecto o contacta a los desarrolladores a través de GitHub.
+ 
 ---
 Esta calculadora de espesores para un cálculo de óptimo económico es resulstado del trabajo de grado:
 
