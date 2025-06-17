@@ -343,9 +343,9 @@ def calculate_convection_coefficient(
 
 # Diccionario de ecuaciones en formato Python/SymPy
 EQUATIONS = {
-    "optimo_economico_plano": "(e + k/h)**2 == (((Ti - Te) * k * w * beta * vida_util * eta) / C) * 10**-3",
-    "optimo_economico_cilindro": "((e + r) * (h * (e + r) * log((e + r)/r) + k)**2) / (h * k * (h * (e + r) - k)) == (((Ti - Te) * beta * vida_util * w * eta) / C) * 10**-3",
-    "optimo_economico_esfera": "((e + r) * (h * (e + r)**2 - h * r * (e + r) + k * r)**2) / ((e + r)**2 * h * k * (h * (e + r) - 2 * k)) == (((Ti - Te) * beta * w * vida_util * eta) / C) * 10**-3",
+    "optimo_economico_plano": "(e + k/h)**2 == (((Ti - Ta) * k * w * beta * vida_util * eta) / C) * 10**-3",
+    "optimo_economico_cilindro": "((e + r) * (h * (e + r) * log((e + r)/r) + k)**2) / (h * k * (h * (e + r) - k)) == (((Ti - Ta) * beta * vida_util * w * eta) / C) * 10**-3",
+    "optimo_economico_esfera": "((e + r) * (h * (e + r)**2 - h * r * (e + r) + k * r)**2) / ((e + r)**2 * h * k * (h * (e + r) - 2 * k)) == (((Ti - Ta) * beta * w * vida_util * eta) / C) * 10**-3",
     "espesor_critico_plano": "e_c == k / h",
     "radio_critico_cilindro": "r_c == k / h",
     "radio_critico_esfera": "r_c == 2 * k / h",
