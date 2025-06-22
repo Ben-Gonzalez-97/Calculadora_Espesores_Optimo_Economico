@@ -186,7 +186,8 @@ def plot_espesor():
         valor_principal_calculado = None
         h_calculado_iter = None
 
-        if equation_key.startswith('optimo_economico'):
+        # Solo calcular h automáticamente si la variable a graficar NO es 'h'
+        if equation_key.startswith('optimo_economico') and variable != 'h':
             temp_known_values_for_h = current_known_values.copy()
             if 'h' in temp_known_values_for_h:
                 del temp_known_values_for_h['h']
@@ -205,6 +206,10 @@ def plot_espesor():
                 except Exception as e_h:
                     print(f"[PLOT DEBUG] Error calculando h para {variable}={v_iter_val}: {e_h}")
                     current_known_values.pop('h', None)
+        elif variable == 'h':
+            # Si la variable a graficar es 'h', usar el valor iterado directamente
+            h_calculado_iter = v_iter_val
+            current_known_values['h'] = v_iter_val
 
         try:
             valor_principal_calculado_tupla = solve_equation(

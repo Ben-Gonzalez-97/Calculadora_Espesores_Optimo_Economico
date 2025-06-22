@@ -63,6 +63,7 @@ const defaultGraphRanges = {
     'Ti': [20, 300, 5],   
     'v': [0.1, 10, 0.2],  
     'k': [0.01, 0.2, 0.005], 
+    'h': [1, 100, 1], 
     'diametro': [0.01, 1, 0.02], 
     'C': [100, 10000, 200], 
     'w': [0.01, 0.2, 0.005],  
@@ -234,6 +235,18 @@ function initGraphHandler() {
             graficarBtn.classList.remove('bg-yellow-500', 'hover:bg-yellow-700');
             graficarBtn.classList.add('bg-red-500', 'hover:bg-red-700');
             // graficaSecundariaControls ya está hidden
+            return;
+        }
+
+        // Validación de máximo de iteraciones (solo frontend)
+        const numIteraciones = Math.floor((max_val - min_val) / step_val) + 1;
+        if (numIteraciones > 500) {
+            resultadoGrafica.textContent = `El número de iteraciones (${numIteraciones}) supera el máximo permitido (500). Ajusta el rango o el paso.`;
+            resultadoGrafica.classList.add('text-red-600');
+            graficarBtn.disabled = false;
+            graficarBtn.textContent = originalGraphButtonText;
+            graficarBtn.classList.remove('bg-yellow-500', 'hover:bg-yellow-700');
+            graficarBtn.classList.add('bg-red-500', 'hover:bg-red-700');
             return;
         }
 
