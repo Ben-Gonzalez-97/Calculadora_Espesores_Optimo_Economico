@@ -188,19 +188,18 @@ function renderListaParametros() {
 
     Object.keys(catalogs).forEach(nombre => {
         const item = document.createElement('div');
-        // Clases del app.js original para cada item
-        item.className = 'flex flex-row items-center justify-between bg-gray-100 rounded-lg px-4 py-2'; 
+        // Cambia el fondo a gris claro (usa bg-gray-50 para un gris suave)
+        item.className = 'flex flex-row items-center justify-between bg-gray-50 shadow-sm rounded-xl border border-gray-300 px-4 py-2'; 
         item.innerHTML = `
           <span class="font-semibold text-[#1976d2] cursor-pointer">${nombre}</span>
           <div class="flex gap-2">
-            <button class="cargar-parametro bg-[#b2d1e5] text-[#101518] rounded px-3 py-1 font-bold text-sm" data-nombre="${nombre}">Cargar</button>
-            <button class="eliminar-parametro bg-[#e57373] text-white rounded px-3 py-1 font-bold text-sm" data-nombre="${nombre}">Eliminar</button>
+            <button class="btn-cargar-parametro" data-nombre="${nombre}">Cargar</button>
+            <button class="btn-eliminar-parametro" data-nombre="${nombre}">Eliminar</button>
           </div>
         `;
-        // Event listener para cargar al hacer clic en el nombre (como en la nueva versión)
         item.querySelector('span').addEventListener('click', () => cargarParametros(nombre));
-        item.querySelector('.cargar-parametro').addEventListener('click', () => cargarParametros(nombre));
-        item.querySelector('.eliminar-parametro').addEventListener('click', () => eliminarParametros(nombre));
+        item.querySelector('.btn-cargar-parametro').addEventListener('click', () => cargarParametros(nombre));
+        item.querySelector('.btn-eliminar-parametro').addEventListener('click', () => eliminarParametros(nombre));
         lista.appendChild(item);
     });
     container.appendChild(lista);
@@ -324,3 +323,4 @@ function initCatalogManager() {
     
     renderListaParametros(); 
 }
+
