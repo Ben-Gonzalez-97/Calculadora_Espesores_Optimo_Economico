@@ -25,6 +25,7 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+upx-5.0.1-win64
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
