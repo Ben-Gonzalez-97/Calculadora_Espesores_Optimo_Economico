@@ -29,14 +29,22 @@ Calculadora_Espesores_Optimo_Economico/
 │       ├── services/
 │       └── schemas/
 ├── Front/
-│   ├── index.html
-│   ├── apiService.js
-│   ├── calculationHandler.js
-│   ├── catalogManager.js
-│   ├── graphHandler.js
-│   ├── modalHandler.js
-│   ├── exportSevice.js
-│   └── uiSetup.js
+│   ├── public/
+│   │   ├── index.html
+│   │   └── assets/
+│   │       ├── styles.css
+│   │       └── logo.png
+│   └── src/
+│       ├── api/
+│       │   └── apiService.js
+│       ├── components/
+│       │   ├── CalculationHandler.js
+│       │   ├── CatalogManager.js
+│       │   ├── GraphHandler.js
+│       │   ├── ModalHandler.js
+│       │   └── ExportService.js
+│       └── ui/
+│           └── UiSetup.js
 ├── requirements.txt
 ├── pyIntaller.bat
 ├── LICENSE
