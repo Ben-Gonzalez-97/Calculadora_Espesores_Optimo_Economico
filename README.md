@@ -29,22 +29,20 @@ Calculadora_Espesores_Optimo_Economico/
 │       ├── services/
 │       └── schemas/
 ├── Front/
-│   ├── public/
-│   │   ├── index.html
-│   │   └── assets/
-│   │       ├── styles.css
-│   │       └── logo.png
-│   └── src/
-│       ├── api/
-│       │   └── apiService.js
-│       ├── components/
-│       │   ├── CalculationHandler.js
-│       │   ├── CatalogManager.js
-│       │   ├── GraphHandler.js
-│       │   ├── ModalHandler.js
-│       │   └── ExportService.js
-│       └── ui/
-│           └── UiSetup.js
+│   ├── index.html
+│   ├── assets/
+│   ├── js/
+│   │   ├── apiService.js
+│   │   ├── CalculationHandler.js
+│   │   ├── CatalogManager.js
+│   │   ├── GraphHandler.js
+│   │   ├── ModalHandler.js
+│   │   ├── ExportService.js
+│   │   └── UiSetup.js
+│   ├── libs/
+│   │   └──  chart.umd.min.js
+│   └── css/
+│       └──  styles.css
 ├── requirements.txt
 ├── pyIntaller.bat
 ├── LICENSE
